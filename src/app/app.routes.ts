@@ -6,9 +6,9 @@ import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent }, // La ruta vacía es la Home
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'property/:id', component: PropertyDetailComponent }, // Le pasamos un ID dinámico
-  { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard] }, // Acá labura el patovica
-  { path: '**', redirectTo: '' } // Cualquier ruta que no exista (error 404), te patea a la Home
+  { path: 'property/:id', component: PropertyDetailComponent },
+  { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' }
 ];
