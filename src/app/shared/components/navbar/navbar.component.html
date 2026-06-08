@@ -1,7 +1,20 @@
-<nav class="bg-gray-900 text-white p-4 fixed w-full top-0 z-50 shadow-md flex justify-between items-center">
-  <h1 class="text-xl font-bold">Inmobiliaria Ortega</h1>
-  <div class="space-x-4">
-    <a routerLink="/" class="hover:text-emerald-400">Inicio</a>
-    <a routerLink="/login" class="hover:text-emerald-400">Login</a>
+<nav class="bg-[#680300] text-white px-8 py-4 fixed w-full top-0 z-50 shadow-lg grid grid-cols-3 items-center">
+
+  <div class="flex justify-start pl-8">
+    <a routerLink="/" class="flex items-center hover:scale-105 transition-transform duration-300 cursor-pointer">
+      <img src="assets/logo3.png" alt="Logo Inmobiliaria" class="h-24 w-auto object-contain" onError="this.src='https://placeholder.co/150x50/white/680300?text=Logo+Inmobiliaria'">
+    </a>
   </div>
+
+
+  <div class="flex justify-center space-x-8 font-semibold tracking-wide text-lg">
+    <a routerLink="/" class="px-6 py-2 rounded-xl hover:bg-white/10 transition-all duration-300 cursor-pointer">Venta</a>
+    <a routerLink="/" class="px-6 py-2 rounded-xl hover:bg-white/10 transition-all duration-300 cursor-pointer">Alquiler</a>
+    <a href="#contacto" class="px-6 py-2 rounded-xl hover:bg-white/10 transition-all duration-300 cursor-pointer">Contacto</a>
+  </div>
+
+  <div class="flex justify-end pr-8">
+    <a routerLink="/login" class="px-4 py-2 rounded-lg text-sm opacity-80 hover:opacity-100 hover:bg-white/10 transition-all duration-300 cursor-pointer">Ingresar</a>
+  </div>
+
 </nav>
