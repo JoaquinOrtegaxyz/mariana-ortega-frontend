@@ -39,7 +39,6 @@ export class PropertiesComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Leemos la URL para saber qué título poner
     if (this.router.url.includes('/venta')) {
       this.pageTitle = 'Propiedades en Venta';
     } else if (this.router.url.includes('/alquiler')) {

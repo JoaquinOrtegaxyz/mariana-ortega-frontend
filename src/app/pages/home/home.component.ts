@@ -12,7 +12,6 @@ import { PropertyType, OperationType } from '../../models/property.enums';
 })
 export class HomeComponent {
 
-  // Lista de prueba (Mock) para ver el diseño de la grilla
   mockProperties: PropertyList[] = [
     {
       id: 1,
@@ -28,7 +27,7 @@ export class HomeComponent {
     {
       id: 2,
       title: 'Depto céntrico súper luminoso',
-      price: 350000, // Precio de alquiler en pesos (ejemplo)
+      price: 350000,
       propertyType: PropertyType.APARTMENT,
       operationType: OperationType.RENT,
       coverImageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800',
