@@ -1,0 +1,16 @@
+<div class="bg-zinc-50 min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4">
+
+    <div class="mb-10 border-b border-gray-200 pb-6">
+      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ pageTitle }}</h1>
+      <p class="text-gray-500 mt-2 text-lg">Encontrá la opción ideal para vos y tu familia.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let prop of mockProperties">
+        <app-property-card [property]="prop"></app-property-card>
+      </div>
+    </div>
+
+  </div>
+</div>

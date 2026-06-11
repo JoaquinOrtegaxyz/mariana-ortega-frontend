@@ -1,1 +1,126 @@
-<p>property-detail works!</p>
+<div class="max-w-7xl mx-auto px-4 py-8 mb-16" *ngIf="property">
+
+  <div class="mb-6">
+    <a routerLink="/" class="text-sm text-gray-500 hover:text-[#680300] font-medium flex items-center gap-2 mb-4 w-fit">
+      &larr; Volver a la búsqueda
+    </a>
+    <div class="flex items-center gap-3 mb-2">
+      <span class="bg-[#680300] text-white text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wide">
+        {{ property.operationType === 'SALE' ? 'Venta' : 'Alquiler' }}
+      </span>
+      <span class="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wide">
+        {{ property.propertyType === 'HOUSE' ? 'Casa' : 'Depto' }}
+      </span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">{{ property.title }}</h1>
+    <p class="text-lg text-gray-600 mt-2 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+      {{ property.location.street }} {{ property.location.streetNumber }}
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+    <div class="lg:col-span-2 flex flex-col gap-8">
+
+      <div class="rounded-2xl overflow-hidden shadow-lg h-[400px] md:h-[500px] bg-gray-100">
+        <img [src]="selectedImageUrl" alt="Imagen principal" class="w-full h-full object-cover transition-all duration-300">
+      </div>
+
+      <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
+        <div
+          *ngFor="let img of property.images"
+          (click)="changeActiveImage(img.url)"
+          [ngClass]="{
+            'border-[#680300] opacity-100 scale-95': img.url === selectedImageUrl,
+            'border-transparent opacity-60 hover:opacity-90': img.url !== selectedImageUrl
+          }"
+          class="h-24 md:h-32 rounded-xl overflow-hidden cursor-pointer transition-all border-2"
+        >
+          <img [src]="img.url" alt="Miniatura" class="w-full h-full object-cover">
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 mt-4">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Características principales</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-xl text-[#680300]">{{ property.characteristics.totalArea }}</span></div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Sup. Total</p><p class="font-semibold text-gray-900">m²</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-xl text-[#680300]">{{ property.characteristics.lotArea || '-' }}</span></div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Sup. Lote</p><p class="font-semibold text-gray-900">m²</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-xl text-[#680300]">{{ property.characteristics.bedrooms }}</span></div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Dormitorios</p><p class="font-semibold text-gray-900">Ambientes</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-xl text-[#680300]">{{ property.characteristics.bathrooms }}</span></div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Baños</p><p class="font-semibold text-gray-900">Completos</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm flex items-center justify-center">
+              <svg *ngIf="property.characteristics.hasGarage" class="w-6 h-6 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              <svg *ngIf="!property.characteristics.hasGarage" class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Cochera</p><p class="font-semibold text-gray-900">{{ property.characteristics.hasGarage ? 'Sí' : 'No' }}</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-xl text-[#680300]">{{ property.characteristics.age }}</span></div>
+            <div class="text-sm"><p class="text-gray-500 font-medium">Antigüedad</p><p class="font-semibold text-gray-900">Años</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Descripción</h2>
+        <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ property.description }}</p>
+      </div>
+
+    </div>
+
+    <div class="relative">
+      <div class="sticky top-32 bg-white rounded-3xl shadow-xl border border-gray-100 p-6 flex flex-col">
+        <p class="text-gray-500 font-medium mb-1">Precio de Inversión</p>
+        <h2 class="text-4xl font-extrabold text-[#680300] mb-6">U$S {{ property.price | number:'1.0-0' }}</h2>
+
+        <button class="w-full bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold py-4 px-6 rounded-xl transition-colors duration-300 flex items-center justify-center gap-3 shadow-md hover:shadow-lg mb-6">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.418-.099.824z"/></svg>
+          Consultar por WhatsApp
+        </button>
+
+        <div class="relative flex py-2 items-center mb-4">
+          <div class="flex-grow border-t border-gray-100"></div>
+          <span class="flex-shrink mx-4 text-gray-400 text-xs font-bold uppercase tracking-wider">o dejà tu consulta</span>
+          <div class="flex-grow border-t border-gray-100"></div>
+        </div>
+
+        <form class="space-y-3.5">
+          <div>
+            <input type="text" placeholder="Nombre y Apellido" class="w-full bg-gray-50 border border-gray-200 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 outline-none transition-all">
+          </div>
+          <div>
+            <input type="email" placeholder="Correo electrónico" class="w-full bg-gray-50 border border-gray-200 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 outline-none transition-all">
+          </div>
+          <div>
+            <input type="text" placeholder="Teléfono" class="w-full bg-gray-50 border border-gray-200 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 outline-none transition-all">
+          </div>
+          <div>
+            <textarea rows="3" placeholder="Hola, me interesa esta propiedad y me gustaría recibir más información..." class="w-full bg-gray-50 border border-gray-200 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 outline-none transition-all resize-none"></textarea>
+          </div>
+          <button type="button" class="w-full bg-[#680300] hover:bg-[#8a0400] text-white font-bold py-3 px-6 rounded-xl transition-colors duration-300 flex items-center justify-center gap-2 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Enviar Mensaje
+          </button>
+        </form>
+
+        <p class="text-[10px] text-center text-gray-400 mt-5 tracking-wide">
+          Referencia de la propiedad: #{{ property.id }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>

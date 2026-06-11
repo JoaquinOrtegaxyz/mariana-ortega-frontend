@@ -9,7 +9,7 @@ export interface Characteristics {
   bedrooms: number;
   bathrooms: number;
   totalArea: number;
-  coveredArea: number;
+  lotArea?: number;
   hasGarage: boolean;
   age: number;
   latitude?: number;
