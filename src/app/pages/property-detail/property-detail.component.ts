@@ -13,14 +13,13 @@ import { PropertyType, OperationType, PropertyStatus } from '../../models/proper
 export class PropertyDetailComponent implements OnInit {
   propertyId!: number;
   property!: PropertyDetail;
-  selectedImageUrl: string = ''; // <--- Nueva variable para rastrear la foto grande activa
+  selectedImageUrl: string = '';
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.propertyId = Number(this.route.snapshot.paramMap.get('id'));
 
-    // Mock temporal para probar la interfaz
     this.property = {
       id: this.propertyId,
       title: 'Hermoso Chalet a media cuadra del mar',
@@ -48,13 +47,11 @@ export class PropertyDetailComponent implements OnInit {
       ]
     };
 
-    // Inicializamos el visor con la primera foto de la lista
     if (this.property && this.property.images.length > 0) {
       this.selectedImageUrl = this.property.images[0].url;
     }
   }
 
-  // Método para cambiar la foto al hacer click en las miniaturas
   changeActiveImage(url: string): void {
     this.selectedImageUrl = url;
   }

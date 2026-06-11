@@ -7,9 +7,9 @@ import { ContactComponent } from './pages/contact/contact.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'venta', component: PropertiesComponent },     // <--- Que diga 'venta'
-  { path: 'alquiler', component: PropertiesComponent },  // <--- Que diga 'alquiler'
-  { path: 'contacto', component: ContactComponent },      // <--- Que diga 'contacto'
+  { path: 'venta', component: PropertiesComponent },
+  { path: 'alquiler', component: PropertiesComponent },
+  { path: 'contacto', component: ContactComponent },
   { path: 'propiedad/:id', component: PropertyDetailComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', redirectTo: '' }

@@ -7,11 +7,10 @@ import { RouterModule } from '@angular/router'; // <--- 1. IMPORTÁ ESTO
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule // <--- 2. AGREGALO ACÁ EN LOS IMPORTS
+    RouterModule
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
-  // Tu lógica del navbar queda igual
 }
