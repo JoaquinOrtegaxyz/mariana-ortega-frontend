@@ -1,9 +1,55 @@
 <div class="bg-zinc-50 min-h-screen py-12">
   <div class="max-w-7xl mx-auto px-4">
 
-    <div class="mb-10 border-b border-gray-200 pb-6">
-      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ pageTitle }}</h1>
-      <p class="text-gray-500 mt-2 text-lg">Encontrá la opción ideal para vos y tu familia.</p>
+    <div class="mb-8 border-b border-gray-200 pb-6 flex justify-between items-end">
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ pageTitle }}</h1>
+        <p class="text-gray-500 mt-2 text-lg">Encontrá la opción ideal para vos y tu familia.</p>
+      </div>
+      <div class="hidden md:block text-sm font-bold text-gray-400 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+        {{ mockProperties.length }} resultados
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-10 flex flex-col md:flex-row gap-4 items-end">
+
+        <div class="w-full md:w-1/4">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 pl-1">Inmueble</label>
+          <select class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 cursor-pointer outline-none transition-all">
+            <option value="">Todos</option>
+            <option value="HOUSE">Casa</option>
+            <option value="APARTMENT">Departamento</option>
+            <option value="COMMERCIAL">Local</option>
+            <option value="LAND">Terreno</option>
+          </select>
+        </div>
+
+        <div class="w-full md:w-1/4">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 pl-1">Zona</label>
+          <select class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 cursor-pointer outline-none transition-all">
+            <option value="">Todas las zonas</option>
+            <option value="CENTRO">Centro</option>
+            <option value="PLAYA">Playa</option>
+            <option value="QUEQUEN">Quequén</option>
+          </select>
+        </div>
+
+        <div class="w-full md:w-1/6">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 pl-1">Dormit.</label>
+          <select class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 cursor-pointer outline-none transition-all">
+            <option value="">Indistinto</option>
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+          </select>
+        </div>
+
+        <div class="w-full md:w-auto flex-grow flex justify-end">
+          <button class="bg-[#680300] hover:bg-[#8a0400] text-white font-bold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 w-full md:w-auto">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+            Aplicar
+          </button>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
