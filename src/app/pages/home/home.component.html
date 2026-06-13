@@ -90,16 +90,19 @@
 
     <div class="flex justify-between items-end mb-10">
       <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Propiedades Destacadas</h2>
-      <a routerLink="/" class="text-[#680300] font-semibold hover:underline">Ver todas &rarr;</a>
+      <a routerLink="/venta" class="text-[#680300] font-semibold hover:underline">Ver todas &rarr;</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      @for (prop of mockProperties; track prop.id) {
+      @for (prop of properties; track prop.id) {
         <app-property-card [property]="prop"></app-property-card>
       } @empty {
-        <div class="col-span-full text-center py-12 text-gray-500">
-          No hay propiedades para mostrar en este momento.
+        <div class="col-span-full text-center py-12 text-[#680300] font-bold text-lg" *ngIf="isLoading">
+          Cargando propiedades...
+        </div>
+        <div class="col-span-full text-center py-12 text-gray-500" *ngIf="!isLoading">
+          No hay propiedades cargadas en el sistema todavía.
         </div>
       }
 

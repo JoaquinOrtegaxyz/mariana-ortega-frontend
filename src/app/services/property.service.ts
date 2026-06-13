@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse, PropertyDetail, PropertyList } from '../models/property.model';
+import { OperationType, PropertyType } from '../models/property.enums';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,22 @@ export class PropertyService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-
     return this.http.get<PageResponse<PropertyList>>(this.apiUrl, { params });
   }
 
   getPropertyById(id: number): Observable<PropertyDetail> {
     return this.http.get<PropertyDetail>(`${this.apiUrl}/${id}`);
+  }
+
+  // NUEVO: Método para buscar filtrando (Ideal para las páginas de Venta/Alquiler)
+  searchProperties(operationType?: OperationType, propertyType?: PropertyType, page: number = 0, size: number = 12): Observable<PageResponse<PropertyList>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (operationType) params = params.set('operationType', operationType);
+    if (propertyType) params = params.set('propertyType', propertyType);
+
+    return this.http.get<PageResponse<PropertyList>>(`${this.apiUrl}/search`, { params });
   }
 }

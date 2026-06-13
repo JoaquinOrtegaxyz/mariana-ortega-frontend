@@ -7,7 +7,7 @@
         <p class="text-gray-500 mt-2 text-lg">Encontrá la opción ideal para vos y tu familia.</p>
       </div>
       <div class="hidden md:block text-sm font-bold text-gray-400 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-        {{ mockProperties.length }} resultados
+        {{ properties.length }} resultados
       </div>
     </div>
 
@@ -53,9 +53,18 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div *ngFor="let prop of mockProperties">
+
+      @for (prop of properties; track prop.id) {
         <app-property-card [property]="prop"></app-property-card>
-      </div>
+      } @empty {
+        <div class="col-span-full text-center py-12 text-[#680300] font-bold text-lg" *ngIf="isLoading">
+          Buscando propiedades...
+        </div>
+        <div class="col-span-full text-center py-12 text-gray-500" *ngIf="!isLoading">
+          No hay propiedades disponibles para esta operación en este momento.
+        </div>
+      }
+
     </div>
 
   </div>
