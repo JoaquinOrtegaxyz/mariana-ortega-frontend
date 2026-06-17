@@ -1,58 +1,105 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { PropertyDetail } from '../../models/property.model';
-import { PropertyType, OperationType, PropertyStatus } from '../../models/property.enums';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PropertyService } from '../../services/property.service';
 
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  // IMPORTANTE: Sumamos ReactiveFormsModule acá
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './property-detail.component.html'
 })
 export class PropertyDetailComponent implements OnInit {
-  propertyId!: number;
-  property!: PropertyDetail;
-  selectedImageUrl: string = '';
+  propertyId: number | null = null;
+  property: any = null;
+  isLoading: boolean = true;
+  hasError: boolean = false;
 
-  constructor(private route: ActivatedRoute) {}
+  // Variables para la Galería
+  images: string[] = [];
+  currentImageIndex: number = 0;
+
+  // Formulario Chill
+  contactForm: FormGroup;
+
+  constructor(
+    private route: ActivatedRoute,
+    private propertyService: PropertyService,
+    private fb: FormBuilder
+  ) {
+    // Armamos el formulario básico
+    this.contactForm = this.fb.group({
+      name: ['', Validators.required],
+      phone: ['', Validators.required],
+      message: ['Hola, me interesa esta propiedad y quiero más información.', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
-    this.propertyId = Number(this.route.snapshot.paramMap.get('id'));
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.propertyId = +id;
+        this.fetchProperty(this.propertyId);
+      } else {
+        this.hasError = true;
+        this.isLoading = false;
+      }
+    });
+  }
 
-    this.property = {
-      id: this.propertyId,
-      title: 'Hermoso Chalet a media cuadra del mar',
-      description: 'Excepcional propiedad ubicada en una de las mejores zonas de la ciudad. Cuenta con un amplio living comedor súper luminoso, cocina totalmente equipada con muebles a medida, patio trasero con parrilla ideal para el verano y cochera cubierta. Excelente oportunidad tanto para vivienda permanente como para inversión turística.',
-      price: 120000,
-      status: PropertyStatus.AVAILABLE,
-      propertyType: PropertyType.HOUSE,
-      operationType: OperationType.SALE,
-      location: {
-        street: 'Av. 2',
-        streetNumber: '4000',
-      },
-      characteristics: {
-        bedrooms: 3,
-        bathrooms: 2,
-        totalArea: 150,
-        lotArea: 300,
-        hasGarage: true,
-        age: 15
-      },
-      images: [
-        { id: 1, url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200', isCover: true },
-        { id: 2, url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800', isCover: false },
-        { id: 3, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800', isCover: false }
-      ]
-    };
+  fetchProperty(id: number) {
+    this.propertyService.getPropertyById(id).subscribe({
+      next: (data) => {
+        this.property = data;
 
-    if (this.property && this.property.images.length > 0) {
-      this.selectedImageUrl = this.property.images[0].url;
+        // Simulamos una galería. El día de mañana esto lo trae el backend.
+        this.images = [
+          this.property.coverImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200',
+          'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200'
+        ];
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error trayendo la propiedad:', err);
+        this.hasError = true;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // Métodos para cambiar de foto
+  nextImage() {
+    if (this.currentImageIndex < this.images.length - 1) {
+      this.currentImageIndex++;
+    } else {
+      this.currentImageIndex = 0; // Vuelve a la primera
     }
   }
 
-  changeActiveImage(url: string): void {
-    this.selectedImageUrl = url;
+  prevImage() {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+    } else {
+      this.currentImageIndex = this.images.length - 1; // Va a la última
+    }
+  }
+
+  setMainImage(index: number) {
+    this.currentImageIndex = index;
+  }
+
+  submitContact() {
+    if (this.contactForm.valid) {
+      console.log('Mensaje para enviar:', this.contactForm.value);
+      alert('¡Mensaje enviado con éxito! La inmobiliaria se contactará a la brevedad.');
+      this.contactForm.reset();
+    } else {
+      this.contactForm.markAllAsTouched();
+    }
   }
 }

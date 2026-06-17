@@ -4,6 +4,8 @@ import { PropertyDetailComponent } from './pages/property-detail/property-detail
 import { LoginComponent } from './pages/login/login.component';
 import { PropertiesComponent } from './pages/properties/properties.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
+import { authGuard } from './core/guards/auth-guard'; // <--- Importamos el guard
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,5 +14,6 @@ export const routes: Routes = [
   { path: 'contacto', component: ContactComponent },
   { path: 'propiedad/:id', component: PropertyDetailComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];

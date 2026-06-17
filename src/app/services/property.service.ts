@@ -23,7 +23,6 @@ export class PropertyService {
     return this.http.get<PropertyDetail>(`${this.apiUrl}/${id}`);
   }
 
-  // NUEVO: Método para buscar filtrando (Ideal para las páginas de Venta/Alquiler)
   searchProperties(operationType?: OperationType, propertyType?: PropertyType, page: number = 0, size: number = 12): Observable<PageResponse<PropertyList>> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -33,5 +32,10 @@ export class PropertyService {
     if (propertyType) params = params.set('propertyType', propertyType);
 
     return this.http.get<PageResponse<PropertyList>>(`${this.apiUrl}/search`, { params });
+  }
+
+  // ---> NUEVO MÉTODO PARA GUARDAR <---
+  createProperty(propertyData: any): Observable<any> {
+    return this.http.post(this.apiUrl, propertyData);
   }
 }
