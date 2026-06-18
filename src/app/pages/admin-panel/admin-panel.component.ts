@@ -24,7 +24,7 @@ export class AdminPanelComponent implements OnInit {
 
   isEditing: boolean = false;
   currentEditId: number | null = null;
-  existingImages: any[] = []; // Array para las fotos que ya están guardadas
+  existingImages: any[] = [];
 
   constructor(private fb: FormBuilder, private propertyService: PropertyService) {
     this.propertyForm = this.fb.group({
@@ -75,46 +75,63 @@ export class AdminPanelComponent implements OnInit {
   editProperty(prop: any) {
     this.isEditing = true;
     this.currentEditId = prop.id;
-
-    // MAGIA PURA: Le pedimos al backend las fotos reales de esta casa para mostrarlas
-    this.propertyService.getImagesByPropertyId(prop.id).subscribe({
-      next: (imgs) => this.existingImages = imgs || [],
-      error: (err) => console.error('Error trayendo las fotos', err)
-    });
-
-    this.propertyForm.patchValue({
-      title: prop.title,
-      description: prop.description || '',
-      price: prop.price || null,
-      propertyType: prop.propertyType || '',
-      operationType: prop.operationType || '',
-      street: prop.location?.street || '',
-      streetNumber: prop.location?.streetNumber || '',
-      bedrooms: prop.characteristics?.bedrooms || null,
-      bathrooms: prop.characteristics?.bathrooms || null
-    });
-
     this.changeTab('nueva');
+
+    // 1. Buscamos las fotos reales para el select
+    this.propertyService.getImagesByPropertyId(prop.id).subscribe({
+      next: (imgs) => this.existingImages = imgs || []
+    });
+
+    // 2. Buscamos LA CASA COMPLETA para rellenar la descripción y ambientes
+    this.propertyService.getPropertyById(prop.id).subscribe({
+      next: (fullProp) => {
+        this.propertyForm.patchValue({
+          title: fullProp.title,
+          description: fullProp.description || '', // ¡Ahora sí viaja la desc!
+          price: fullProp.price || null,
+          propertyType: fullProp.propertyType || '',
+          operationType: fullProp.operationType || '',
+          street: fullProp.location?.street || '',
+          streetNumber: fullProp.location?.streetNumber || '',
+          bedrooms: fullProp.characteristics?.bedrooms || null,
+          bathrooms: fullProp.characteristics?.bathrooms || null
+        });
+      },
+      error: (err) => console.error('Error trayendo la casa completa', err)
+    });
+  }
+
+  onChangeCover(event: any) {
+    const selectedId = Number(event.target.value);
+    const img = this.existingImages.find(i => i.id === selectedId);
+    if (img) {
+      this.setAsCover(img);
+    }
   }
 
   setAsCover(img: any) {
     if (this.currentEditId) {
       this.propertyService.setCoverImage(this.currentEditId, img.id).subscribe({
         next: () => {
-          this.existingImages.forEach(i => i.isCover = (i.id === img.id));
+          this.existingImages.forEach(i => {
+            i.isCover = (i.id === img.id);
+            i.cover = (i.id === img.id);
+          });
           this.loadActiveProperties();
-        }
+        },
+        error: (err) => alert('Hubo un error al cambiar la portada')
       });
     }
   }
 
   deleteExistingImage(img: any) {
-    if (confirm('¿Estás seguro de borrar esta foto? Se eliminará de la nube para siempre.')) {
+    if (confirm('¿Estás seguro de borrar esta foto? Se eliminará de la nube definitivamente.')) {
       this.propertyService.deleteImage(img.id).subscribe({
         next: () => {
           this.existingImages = this.existingImages.filter(i => i.id !== img.id);
           this.loadActiveProperties();
-        }
+        },
+        error: (err) => alert('Hubo un error al borrar la foto')
       });
     }
   }
@@ -193,7 +210,9 @@ export class AdminPanelComponent implements OnInit {
           next: (res) => {
              if (this.selectedFile && res.id) {
                this.propertyService.uploadImage(res.id, this.selectedFile).subscribe({
-                 next: () => this.finishUpload('¡Propiedad actualizada con foto nueva!')
+                 next: () => {
+                   this.finishUpload('¡Propiedad actualizada con foto nueva!');
+                 }
                });
              } else {
                this.finishUpload('¡Propiedad actualizada!');

@@ -31,13 +31,15 @@ export class PropertiesComponent implements OnInit {
       operation = OperationType.RENT;
     }
 
-    // Le pegamos al endpoint /search que tenés en Spring Boot
+    // Le pegamos al endpoint que armamos en el servicio
     this.propertyService.searchProperties(operation, undefined, 0, 12).subscribe({
-      next: (response) => {
-        this.properties = response.content;
+      // ¡ACÁ LE AGREGAMOS EL : any !
+      next: (response: any) => {
+        this.properties = response.content || [];
         this.isLoading = false;
       },
-      error: (err) => {
+      // ¡ACÁ TAMBIÉN LE AGREGAMOS EL : any !
+      error: (err: any) => {
         console.error('Error trayendo propiedades:', err);
         this.isLoading = false;
       }
