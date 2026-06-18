@@ -7,7 +7,6 @@ import { PropertyService } from '../../services/property.service';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  // IMPORTANTE: Sumamos ReactiveFormsModule acá
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './property-detail.component.html'
 })
@@ -17,11 +16,9 @@ export class PropertyDetailComponent implements OnInit {
   isLoading: boolean = true;
   hasError: boolean = false;
 
-  // Variables para la Galería
   images: string[] = [];
   currentImageIndex: number = 0;
 
-  // Formulario Chill
   contactForm: FormGroup;
 
   constructor(
@@ -55,12 +52,14 @@ export class PropertyDetailComponent implements OnInit {
       next: (data) => {
         this.property = data;
 
-        // Simulamos una galería. El día de mañana esto lo trae el backend.
-        this.images = [
-          this.property.coverImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200',
-          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200',
-          'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200'
-        ];
+        if (this.property.images && this.property.images.length > 0) {
+          const coverImg = this.property.images.find((i: any) => i.isCover) || this.property.images[0];
+          const otherImgs = this.property.images.filter((i: any) => i.id !== coverImg.id);
+
+          this.images = [coverImg.url, ...otherImgs.map((i: any) => i.url)];
+        } else {
+          this.images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200'];
+        }
 
         this.isLoading = false;
       },
@@ -72,12 +71,11 @@ export class PropertyDetailComponent implements OnInit {
     });
   }
 
-  // Métodos para cambiar de foto
   nextImage() {
     if (this.currentImageIndex < this.images.length - 1) {
       this.currentImageIndex++;
     } else {
-      this.currentImageIndex = 0; // Vuelve a la primera
+      this.currentImageIndex = 0;
     }
   }
 
@@ -85,7 +83,7 @@ export class PropertyDetailComponent implements OnInit {
     if (this.currentImageIndex > 0) {
       this.currentImageIndex--;
     } else {
-      this.currentImageIndex = this.images.length - 1; // Va a la última
+      this.currentImageIndex = this.images.length - 1;
     }
   }
 

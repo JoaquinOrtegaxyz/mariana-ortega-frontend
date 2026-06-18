@@ -1,44 +1,53 @@
-<div [routerLink]="['/propiedad', property.id]" class="bg-[#680300] rounded-2xl shadow-md border border-[#520200] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col h-full group">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full" [routerLink]="['/propiedad', property.id]">
+  <!-- Foto de la tarjeta -->
+  <div class="relative h-56 w-full overflow-hidden bg-gray-200">
+    <!-- Asume que si no hay foto en property.images, le clava una de relleno -->
+    <img [src]="getCoverImage()" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Foto propiedad">
 
-  <div class="relative h-56 overflow-hidden">
-    <img
-      [src]="property.coverImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600'"
-      [alt]="property.title"
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-    >
-    <div class="absolute top-4 left-4 bg-white text-[#680300] text-xs font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wide shadow-md">
-      {{ property.operationType === 'SALE' ? 'En Venta' : 'Alquiler' }}
+    <!-- Cartelito de Venta/Alquiler -->
+    <div class="absolute top-4 left-4">
+      <span class="px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wide shadow-md"
+            [ngClass]="property.operationType === 'SALE' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'">
+        {{ property.operationType === 'SALE' ? 'Venta' : 'Alquiler' }}
+      </span>
     </div>
   </div>
 
-  <div class="p-5 flex flex-col flex-grow text-white">
+  <!-- Contenido de la tarjeta -->
+  <div class="p-5 flex flex-col flex-grow">
 
-    <h3 class="text-2xl font-extrabold mb-1">
-      U$S {{ property.price | number:'1.0-0' }}
-    </h3>
-
-    <h4 class="text-lg font-semibold text-gray-100 line-clamp-1 mb-1">{{ property.title }}</h4>
-    <p class="text-sm text-gray-300 flex items-center gap-1.5 mb-4">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-      {{ property.street }}
+    <!-- Título y Ubicación -->
+    <h3 class="text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-[#680300] transition-colors">{{ property.title }}</h3>
+    <p class="text-sm text-gray-500 mb-4 flex items-center gap-1">
+      <svg class="w-4 h-4 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+      {{ property.location?.street || 'Consultar' }} {{ property.location?.streetNumber }}
     </p>
 
-    <div class="mt-auto border-t border-[#8a0400] pt-4 flex justify-between text-gray-300 text-sm">
-
-      <div class="flex items-center gap-1.5" title="Habitaciones">
-        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-        <span>{{ property.bedrooms }}</span>
-      </div>
-
-      <div class="flex items-center gap-1.5" title="Baños">
-        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-        <span>{{ property.bathrooms }}</span>
-      </div>
-
-      <div class="flex items-center font-medium text-gray-300">
-        {{ property.propertyType === 'HOUSE' ? 'Casa' : property.propertyType === 'APARTMENT' ? 'Depto' : property.propertyType === 'COMMERCIAL' ? 'Local' : 'Terreno' }}
-      </div>
-
+    <!-- Características (Dormitorios y Baños) -->
+    <div class="flex items-center gap-4 text-sm text-gray-600 font-medium mb-6 mt-auto">
+      <span class="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md">
+        <svg class="w-4 h-4 text-[#8a0400]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        {{ property.characteristics?.bedrooms || 0 }} Dorm.
+      </span>
+      <span class="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md">
+        <svg class="w-4 h-4 text-[#8a0400]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+        {{ property.characteristics?.bathrooms || 0 }} Baños
+      </span>
     </div>
+
+    <!-- PRECIO CONDICIONAL -->
+    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+      <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        {{ property.propertyType === 'HOUSE' ? 'Casa' : property.propertyType === 'APARTMENT' ? 'Depto' : property.propertyType === 'COMMERCIAL' ? 'Local' : 'Lote' }}
+      </span>
+
+      <span *ngIf="property.price > 0" class="text-xl font-black text-[#680300]">
+        U$S {{ property.price | number:'1.0-0' }}
+      </span>
+      <span *ngIf="!property.price || property.price === 0" class="text-sm font-bold bg-[#680300]/10 text-[#680300] px-3 py-1.5 rounded-lg border border-[#680300]/20">
+        Consultar valor
+      </span>
+    </div>
+
   </div>
 </div>

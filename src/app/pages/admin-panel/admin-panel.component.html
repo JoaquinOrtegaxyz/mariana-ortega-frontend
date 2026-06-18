@@ -1,74 +1,237 @@
-<div *ngIf="activeTab === 'nueva'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-4">Detalles del Inmueble</h2>
+<div class="max-w-6xl mx-auto px-4 py-10">
 
-        <div *ngIf="successMessage" class="text-green-700 bg-green-50 p-4 rounded-xl text-sm font-bold mb-6 border border-green-200 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-          {{ successMessage }}
+  <h1 class="text-3xl font-black text-gray-900 mb-8 tracking-tight">Panel de Control</h1>
+
+  <div class="flex flex-wrap gap-2 md:gap-4 mb-8 border-b border-gray-200 pb-4">
+    <button (click)="changeTab('mis-propiedades')" [ngClass]="{'bg-[#680300] text-white shadow-md': activeTab === 'mis-propiedades', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'mis-propiedades'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
+      🏠 Mis Propiedades
+    </button>
+    <button (click)="changeTab('archivados')" [ngClass]="{'bg-gray-800 text-white shadow-md': activeTab === 'archivados', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'archivados'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
+      📁 Archivados
+    </button>
+    <button (click)="changeTab('nueva')" [ngClass]="{'bg-[#680300] text-white shadow-md': activeTab === 'nueva', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'nueva'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
+      {{ isEditing ? '✏️ Editar Propiedad' : '➕ Cargar Nueva' }}
+    </button>
+  </div>
+
+  <div *ngIf="activeTab === 'mis-propiedades'" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+      <h2 class="text-xl font-bold text-gray-800">Propiedades Publicadas</h2>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-200 text-gray-500 text-sm bg-white">
+            <th class="p-5 font-bold">Título</th>
+            <th class="p-5 font-bold">Operación</th>
+            <th class="p-5 font-bold">Precio</th>
+            <th class="p-5 font-bold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="activeProperties.length === 0">
+            <td colspan="4" class="p-8 text-center text-gray-500 font-medium">No hay propiedades activas. ¡Cargá la primera!</td>
+          </tr>
+          <tr *ngFor="let prop of activeProperties" class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <td class="p-5 font-bold text-gray-900">{{ prop.title }}</td>
+            <td class="p-5">
+               <span class="px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wide" [ngClass]="prop.operationType === 'SALE' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'">
+                  {{ prop.operationType === 'SALE' ? 'Venta' : 'Alquiler' }}
+               </span>
+            </td>
+
+            <td class="p-5 font-extrabold text-[#680300]">
+              <span *ngIf="prop.price > 0">U$S {{ prop.price | number:'1.0-0' }}</span>
+              <span *ngIf="!prop.price || prop.price === 0" class="text-sm font-bold bg-[#680300]/10 text-[#680300] px-2 py-1 rounded-md">Consultar valor</span>
+            </td>
+
+            <td class="p-5 text-right flex justify-end gap-2">
+               <button (click)="editProperty(prop)" class="text-blue-600 hover:text-white hover:bg-blue-600 px-4 py-2 rounded-lg font-bold text-sm transition-all border border-blue-200">
+                 Editar
+               </button>
+               <button (click)="archiveProperty(prop.id)" class="text-amber-600 hover:text-white hover:bg-amber-600 px-4 py-2 rounded-lg font-bold text-sm transition-all border border-amber-200">
+                 Archivar
+               </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'archivados'" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 bg-gray-800">
+      <h2 class="text-xl font-bold text-white flex items-center gap-2">
+        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+        Propiedades Archivadas
+      </h2>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-200 text-gray-500 text-sm bg-white">
+            <th class="p-5 font-bold">Título</th>
+            <th class="p-5 font-bold">Precio</th>
+            <th class="p-5 font-bold text-right">Acciones Peligrosas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="archivedProperties.length === 0">
+            <td colspan="3" class="p-8 text-center text-gray-500 font-medium">La papelera está vacía.</td>
+          </tr>
+          <tr *ngFor="let prop of archivedProperties" class="border-b border-gray-50 hover:bg-red-50/30 transition-colors">
+            <td class="p-5 font-bold text-gray-600 line-through">{{ prop.title }}</td>
+
+            <td class="p-5 font-semibold text-gray-500">
+              <span *ngIf="prop.price > 0">U$S {{ prop.price | number:'1.0-0' }}</span>
+              <span *ngIf="!prop.price || prop.price === 0" class="text-sm italic">Consultar valor</span>
+            </td>
+
+            <td class="p-5 text-right flex justify-end gap-2">
+               <button (click)="unarchiveProperty(prop.id)" class="text-green-600 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg font-bold text-sm transition-all border border-green-200 flex items-center gap-2">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                 Restaurar
+               </button>
+               <button (click)="deletePermanently(prop.id)" class="text-red-600 hover:text-white hover:bg-red-600 px-4 py-2 rounded-lg font-bold text-sm transition-all border border-red-200 flex items-center gap-2">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                 Eliminar
+               </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'nueva'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-4">
+      {{ isEditing ? 'Editar Inmueble' : 'Cargar Nuevo Inmueble' }}
+    </h2>
+
+    <div *ngIf="successMessage" class="text-green-700 bg-green-50 p-4 rounded-xl text-sm font-bold mb-6 border border-green-200 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      {{ successMessage }}
+    </div>
+
+    <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Título de la Publicación</label>
+          <input type="text" formControlName="title" placeholder="Ej: Chalet céntrico 3 ambientes" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
         </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Precio (U$S) - Opcional</label>
+          <input type="number" formControlName="price" placeholder="Dejar vacío para 'Consultar'" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
+        </div>
+      </div>
 
-        <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Descripción de la Propiedad</label>
+        <textarea formControlName="description" rows="4" placeholder="Detallá las comodidades, estado del inmueble, etc." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all resize-none"></textarea>
+      </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Título de la Publicación</label>
-              <input type="text" formControlName="title" placeholder="Ej: Chalet céntrico 3 ambientes" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Precio (U$S)</label>
-              <input type="number" formControlName="price" placeholder="Ej: 120000" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
-            </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Inmueble</label>
+          <select formControlName="propertyType" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
+            <option value="">Seleccionar...</option>
+            <option value="HOUSE">Casa</option>
+            <option value="APARTMENT">Departamento</option>
+            <option value="COMMERCIAL">Local Comercial</option>
+            <option value="LAND">Terreno</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Operación</label>
+          <select formControlName="operationType" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
+            <option value="">Seleccionar...</option>
+            <option value="SALE">Venta</option>
+            <option value="RENT">Alquiler</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Calle</label>
+          <input type="text" formControlName="street" placeholder="Ej: Calle 62" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Altura</label>
+          <input type="text" formControlName="streetNumber" placeholder="Ej: 1234" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Dormit. / Baños</label>
+          <div class="flex gap-2">
+            <input type="number" formControlName="bedrooms" placeholder="D" class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all text-center">
+            <input type="number" formControlName="bathrooms" placeholder="B" class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all text-center">
           </div>
+        </div>
+      </div>
 
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Descripción de la Propiedad</label>
-            <textarea formControlName="description" rows="4" placeholder="Detallá las comodidades, estado del inmueble, etc." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all resize-none"></textarea>
-          </div>
+      <div class="pt-4 border-t border-gray-100">
+        <label class="block text-sm font-semibold text-gray-700 mb-4">Subir nueva foto (Se sumará a la galería)</label>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Inmueble</label>
-              <select formControlName="propertyType" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
-                <option value="">Seleccionar...</option>
-                <option value="HOUSE">Casa</option>
-                <option value="APARTMENT">Departamento</option>
-                <option value="COMMERCIAL">Local Comercial</option>
-                <option value="LAND">Terreno</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Operación</label>
-              <select formControlName="operationType" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
-                <option value="">Seleccionar...</option>
-                <option value="SALE">Venta</option>
-                <option value="RENT">Alquiler</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Calle</label>
-              <input type="text" formControlName="street" placeholder="Ej: Calle 62" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Altura</label>
-              <input type="text" formControlName="streetNumber" placeholder="Ej: 1234" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Dormit. / Baños</label>
-              <div class="flex gap-2">
-                <input type="number" formControlName="bedrooms" placeholder="D" class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all text-center">
-                <input type="number" formControlName="bathrooms" placeholder="B" class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all text-center">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+          <div class="w-full md:w-1/2">
+            <label class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-[#680300] transition-colors relative overflow-hidden group">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-10 h-10 text-gray-400 group-hover:text-[#680300] mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <p class="mb-2 text-sm text-gray-500 font-semibold group-hover:text-[#680300]"><span class="font-bold">Hacé clic para subir</span> o arrastrá el archivo</p>
+                <p class="text-xs text-gray-500">PNG, JPG o JPEG (Max. 5MB)</p>
               </div>
-            </div>
+              <input type="file" class="hidden" accept="image/png, image/jpeg, image/jpg" (change)="onFileSelected($event)" />
+            </label>
           </div>
 
-          <div class="pt-4 border-t border-gray-200 flex justify-end mt-8">
-            <button type="submit" class="bg-[#680300] hover:bg-[#8a0400] text-white font-bold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-md flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              Guardar Propiedad
+          <div *ngIf="imagePreview" class="w-full md:w-1/2 h-40 relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+            <img [src]="imagePreview" alt="Previsualización" class="w-full h-full object-cover">
+            <button type="button" (click)="clearImage()" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-lg shadow-md transition-colors" title="Borrar foto">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
-
-        </form>
+        </div>
       </div>
+
+      <div *ngIf="isEditing && existingImages.length > 0" class="pt-6 border-t border-gray-100">
+        <label class="block text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Fotos ya cargadas en la galería
+        </label>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div *ngFor="let img of existingImages" class="relative rounded-xl overflow-hidden border-4 group transition-all shadow-sm" [ngClass]="{'border-[#680300]': img.isCover, 'border-transparent': !img.isCover}">
+            <img [src]="img.url" class="w-full h-32 object-cover">
+
+            <span *ngIf="img.isCover" class="absolute top-2 left-2 bg-[#680300] text-white text-xs font-black px-2 py-1 rounded-md shadow-md">PORTADA</span>
+
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
+              <button *ngIf="!img.isCover" type="button" (click)="setAsCover(img)" class="bg-white text-[#680300] text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors shadow-lg">
+                Hacer Portada
+              </button>
+              <button type="button" (click)="deleteExistingImage(img)" class="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors shadow-lg">
+                Borrar Foto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-gray-200 flex justify-end mt-8">
+        <button
+          type="submit"
+          [disabled]="propertyForm.invalid || isLoading"
+          class="bg-[#680300] text-white font-bold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-md flex items-center gap-2 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none hover:bg-[#8a0400]"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          {{ isEditing ? (isLoading ? 'Actualizando...' : 'Actualizar Propiedad') : (isLoading ? 'Guardando...' : 'Guardar Propiedad') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
