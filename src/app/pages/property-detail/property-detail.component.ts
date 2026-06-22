@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PropertyService } from '../../services/property.service';
 
 @Component({
@@ -21,12 +22,14 @@ export class PropertyDetailComponent implements OnInit {
 
   contactForm: FormGroup;
 
+  mapUrl: SafeResourceUrl | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private propertyService: PropertyService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private sanitizer: DomSanitizer
   ) {
-    // Armamos el formulario básico
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
       phone: ['', Validators.required],
@@ -52,10 +55,17 @@ export class PropertyDetailComponent implements OnInit {
       next: (data) => {
         this.property = data;
 
+        // MAGIA DEL MAPA: Le tiramos todos los parámetros a Google para forzar el pin (iwloc=B)
+        if (this.property.location?.street) {
+          const address = `${this.property.location.street} ${this.property.location.streetNumber || ''}, Necochea, Buenos Aires, Argentina`;
+          const url = `https://maps.google.com/maps?width=100%25&height=100%25&hl=es-419&q=${encodeURIComponent(address)}&t=&z=15&ie=UTF8&iwloc=B&output=embed`;
+          this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        }
+
+        // Lógica de imágenes
         if (this.property.images && this.property.images.length > 0) {
           const coverImg = this.property.images.find((i: any) => i.isCover) || this.property.images[0];
           const otherImgs = this.property.images.filter((i: any) => i.id !== coverImg.id);
-
           this.images = [coverImg.url, ...otherImgs.map((i: any) => i.url)];
         } else {
           this.images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200'];
