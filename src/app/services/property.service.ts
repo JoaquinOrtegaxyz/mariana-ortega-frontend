@@ -16,17 +16,24 @@ export class PropertyService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  searchProperties(operationType?: string, propertyType?: string, page: number = 0, size: number = 12): Observable<any> {
+  searchProperties(
+    operationType?: string,
+    propertyType?: string,
+    zone?: string,
+    bedrooms?: string,
+    bathrooms?: string,
+    page: number = 0,
+    size: number = 12
+  ): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    if (operationType) {
-      params = params.set('operationType', operationType);
-    }
-    if (propertyType) {
-      params = params.set('propertyType', propertyType);
-    }
+    if (operationType) params = params.set('operationType', operationType);
+    if (propertyType) params = params.set('propertyType', propertyType);
+    if (zone) params = params.set('zone', zone);
+    if (bedrooms) params = params.set('bedrooms', bedrooms);
+    if (bathrooms) params = params.set('bathrooms', bathrooms);
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params });
   }

@@ -5,12 +5,13 @@ import { LoginComponent } from './pages/login/login.component';
 import { PropertiesComponent } from './pages/properties/properties.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
-import { authGuard } from './core/guards/auth-guard'; // <--- Importamos el guard
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'venta', component: PropertiesComponent },
   { path: 'alquiler', component: PropertiesComponent },
+  { path: 'buscar', component: PropertiesComponent }, // <--- FALTABA ESTA LÍNEA MÁGICA
   { path: 'contacto', component: ContactComponent },
   { path: 'propiedad/:id', component: PropertyDetailComponent },
   { path: 'login', component: LoginComponent },

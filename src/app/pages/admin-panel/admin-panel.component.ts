@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PropertyService } from '../../services/property.service';
 
@@ -13,6 +13,7 @@ import { PropertyService } from '../../services/property.service';
 export class AdminPanelComponent implements OnInit {
   activeTab: string = 'mis-propiedades';
   propertyForm: FormGroup;
+  configForm: FormGroup;
   isLoading: boolean = false;
   successMessage: string = '';
 
@@ -26,7 +27,11 @@ export class AdminPanelComponent implements OnInit {
   currentEditId: number | null = null;
   existingImages: any[] = [];
 
-  constructor(private fb: FormBuilder, private propertyService: PropertyService) {
+  constructor(
+    private fb: FormBuilder,
+    private propertyService: PropertyService,
+    private route: ActivatedRoute // Inyectamos la ruta para leer los parámetros
+  ) {
     this.propertyForm = this.fb.group({
       title: ['', Validators.required],
       description: [''],
@@ -38,10 +43,26 @@ export class AdminPanelComponent implements OnInit {
       bedrooms: [null],
       bathrooms: [null]
     });
+
+    this.configForm = this.fb.group({
+      whatsapp: ['5492262579622', Validators.required],
+      instagram: [''],
+      facebook: [''],
+      currentPassword: [''],
+      newPassword: ['']
+    });
   }
 
   ngOnInit() {
-    this.loadActiveProperties();
+    // Escuchamos la URL. Si viene con el parámetro ?tab=algo, cambiamos de pestaña al instante.
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab) {
+        this.changeTab(tab);
+      } else {
+        this.changeTab('mis-propiedades');
+      }
+    });
   }
 
   changeTab(tab: string) {
@@ -77,17 +98,15 @@ export class AdminPanelComponent implements OnInit {
     this.currentEditId = prop.id;
     this.changeTab('nueva');
 
-    // 1. Buscamos las fotos reales para el select
     this.propertyService.getImagesByPropertyId(prop.id).subscribe({
       next: (imgs) => this.existingImages = imgs || []
     });
 
-    // 2. Buscamos LA CASA COMPLETA para rellenar la descripción y ambientes
     this.propertyService.getPropertyById(prop.id).subscribe({
       next: (fullProp) => {
         this.propertyForm.patchValue({
           title: fullProp.title,
-          description: fullProp.description || '', // ¡Ahora sí viaja la desc!
+          description: fullProp.description || '',
           price: fullProp.price || null,
           propertyType: fullProp.propertyType || '',
           operationType: fullProp.operationType || '',
@@ -246,5 +265,13 @@ export class AdminPanelComponent implements OnInit {
     this.isEditing = false;
     this.currentEditId = null;
     this.existingImages = [];
+  }
+
+  onConfigSubmit() {
+    if (this.configForm.valid) {
+      console.log('Datos a guardar en el backend:', this.configForm.value);
+      this.successMessage = '¡Configuración guardada correctamente!';
+      setTimeout(() => this.successMessage = '', 4000);
+    }
   }
 }
