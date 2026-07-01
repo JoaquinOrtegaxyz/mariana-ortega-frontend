@@ -4,6 +4,10 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PropertyService } from '../../services/property.service';
 
+// Acá están los imports de los servicios nuevos bien puestos
+import { ConfigService } from '../../services/config.service';
+import { AuthService } from '../../core/services/auth.service';
+
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
@@ -30,7 +34,9 @@ export class AdminPanelComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private propertyService: PropertyService,
-    private route: ActivatedRoute // Inyectamos la ruta para leer los parámetros
+    private route: ActivatedRoute,
+    private configService: ConfigService,
+    private authService: AuthService
   ) {
     this.propertyForm = this.fb.group({
       title: ['', Validators.required],
@@ -41,11 +47,13 @@ export class AdminPanelComponent implements OnInit {
       street: [''],
       streetNumber: [''],
       bedrooms: [null],
-      bathrooms: [null]
+      bathrooms: [null],
+      totalArea: [null],
+      lotArea: [null]
     });
 
     this.configForm = this.fb.group({
-      whatsapp: ['5492262579622', Validators.required],
+      whatsapp: ['', Validators.required],
       instagram: [''],
       facebook: [''],
       currentPassword: [''],
@@ -54,13 +62,23 @@ export class AdminPanelComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Escuchamos la URL. Si viene con el parámetro ?tab=algo, cambiamos de pestaña al instante.
     this.route.queryParams.subscribe(params => {
       const tab = params['tab'];
       if (tab) {
         this.changeTab(tab);
       } else {
         this.changeTab('mis-propiedades');
+      }
+    });
+
+    // Apenas carga, le pega a la base de datos para traer el WhatsApp y las redes
+    this.configService.getConfig().subscribe({
+      next: (data) => {
+        this.configForm.patchValue({
+          whatsapp: data.whatsapp || '',
+          instagram: data.instagram || '',
+          facebook: data.facebook || ''
+        });
       }
     });
   }
@@ -113,7 +131,9 @@ export class AdminPanelComponent implements OnInit {
           street: fullProp.location?.street || '',
           streetNumber: fullProp.location?.streetNumber || '',
           bedrooms: fullProp.characteristics?.bedrooms || null,
-          bathrooms: fullProp.characteristics?.bathrooms || null
+          bathrooms: fullProp.characteristics?.bathrooms || null,
+          totalArea: fullProp.characteristics?.totalArea || null,
+          lotArea: fullProp.characteristics?.lotArea || null
         });
       },
       error: (err) => console.error('Error trayendo la casa completa', err)
@@ -215,8 +235,8 @@ export class AdminPanelComponent implements OnInit {
         characteristics: {
           bedrooms: formValue.bedrooms || 0,
           bathrooms: formValue.bathrooms || 0,
-          lotArea: 0,
-          totalArea: 0,
+          totalArea: formValue.totalArea || 0,
+          lotArea: formValue.lotArea || 0,
           hasGarage: false,
           age: 0,
           latitude: 0,
@@ -269,9 +289,40 @@ export class AdminPanelComponent implements OnInit {
 
   onConfigSubmit() {
     if (this.configForm.valid) {
-      console.log('Datos a guardar en el backend:', this.configForm.value);
-      this.successMessage = '¡Configuración guardada correctamente!';
-      setTimeout(() => this.successMessage = '', 4000);
+      const formValues = this.configForm.value;
+
+      // Actualizar redes y WhatsApp
+      const configData = {
+        whatsapp: formValues.whatsapp,
+        instagram: formValues.instagram,
+        facebook: formValues.facebook
+      };
+
+      this.configService.updateConfig(configData).subscribe({
+        next: () => {
+          this.successMessage = '¡Configuración guardada correctamente!';
+          setTimeout(() => this.successMessage = '', 4000);
+        },
+        error: () => alert('Hubo un error al guardar las redes.')
+      });
+
+      // Actualizar contraseña solo si completaron los dos campos
+      if (formValues.currentPassword && formValues.newPassword) {
+        const passData = {
+          currentPassword: formValues.currentPassword,
+          newPassword: formValues.newPassword
+        };
+
+        this.authService.changePassword(passData).subscribe({
+          next: () => {
+            this.successMessage = '¡Redes y contraseña actualizadas con éxito!';
+            this.configForm.patchValue({ currentPassword: '', newPassword: '' });
+          },
+          error: (err) => {
+            alert('Error: La contraseña actual es incorrecta.');
+          }
+        });
+      }
     }
   }
 }

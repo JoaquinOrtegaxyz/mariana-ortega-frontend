@@ -2,7 +2,6 @@
 
   <h1 class="text-3xl font-black text-gray-900 mb-8 tracking-tight">Panel de Control</h1>
 
-  <!-- Menú de Pestañas -->
   <div class="flex flex-wrap gap-2 md:gap-4 mb-8 border-b border-gray-200 pb-4">
     <button (click)="changeTab('mis-propiedades')" [ngClass]="{'bg-[#680300] text-white shadow-md': activeTab === 'mis-propiedades', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'mis-propiedades'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
       🏠 Mis Propiedades
@@ -13,13 +12,11 @@
     <button (click)="changeTab('nueva')" [ngClass]="{'bg-[#680300] text-white shadow-md': activeTab === 'nueva', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'nueva'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
       {{ isEditing ? '✏️ Editar Propiedad' : '➕ Cargar Nueva' }}
     </button>
-    <!-- NUEVA PESTAÑA DE CONFIGURACIÓN -->
     <button (click)="changeTab('configuracion')" [ngClass]="{'bg-blue-600 text-white shadow-md': activeTab === 'configuracion', 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200': activeTab !== 'configuracion'}" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all ml-auto">
       ⚙️ Configuración
     </button>
   </div>
 
-  <!-- PESTAÑA 1: MIS PROPIEDADES -->
   <div *ngIf="activeTab === 'mis-propiedades'" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100 bg-gray-50/50">
       <h2 class="text-xl font-bold text-gray-800">Propiedades Publicadas</h2>
@@ -59,7 +56,6 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 2: ARCHIVADOS -->
   <div *ngIf="activeTab === 'archivados'" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100 bg-gray-800">
       <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -100,7 +96,6 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 3: CARGAR NUEVA / EDITAR -->
   <div *ngIf="activeTab === 'nueva'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
     <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-4">
       {{ isEditing ? 'Editar Inmueble' : 'Cargar Nuevo Inmueble' }}
@@ -167,7 +162,17 @@
         </div>
       </div>
 
-      <!-- FOTO PRINCIPAL INPUT -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Superficie Cubierta (m²)</label>
+          <input type="number" formControlName="totalArea" placeholder="Ej: 120" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Superficie Total / Terreno (m²)</label>
+          <input type="number" formControlName="lotArea" placeholder="Ej: 300" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none transition-all bg-white">
+        </div>
+      </div>
+
       <div class="pt-4 border-t border-gray-100">
         <label class="block text-sm font-semibold text-gray-700 mb-4">
           {{ isEditing ? 'Subir nueva foto (Se sumará a la galería)' : 'Foto de Portada' }}
@@ -188,7 +193,6 @@
         </div>
       </div>
 
-      <!-- GESTOR DE FOTOS -->
       <div *ngIf="isEditing" class="pt-6 border-t border-gray-100">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Fotos de la Propiedad</h3>
         <div *ngIf="existingImages.length === 0" class="text-gray-500 italic p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -223,7 +227,6 @@
     </form>
   </div>
 
-  <!-- NUEVA PESTAÑA 4: CONFIGURACIÓN -->
   <div *ngIf="activeTab === 'configuracion'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
     <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-4 flex items-center gap-2">
       <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -236,7 +239,6 @@
 
     <form [formGroup]="configForm" (ngSubmit)="onConfigSubmit()" class="space-y-10">
 
-      <!-- Sección: Datos de Contacto -->
       <div>
         <h3 class="text-lg font-bold text-gray-800 mb-4">Datos de Contacto y Redes</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-100">
@@ -255,7 +257,6 @@
         </div>
       </div>
 
-      <!-- Sección: Seguridad -->
       <div>
         <h3 class="text-lg font-bold text-gray-800 mb-4">Seguridad</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-100">

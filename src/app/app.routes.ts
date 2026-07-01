@@ -11,7 +11,7 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'venta', component: PropertiesComponent },
   { path: 'alquiler', component: PropertiesComponent },
-  { path: 'buscar', component: PropertiesComponent }, // <--- FALTABA ESTA LÍNEA MÁGICA
+  { path: 'buscar', component: PropertiesComponent },
   { path: 'contacto', component: ContactComponent },
   { path: 'propiedad/:id', component: PropertyDetailComponent },
   { path: 'login', component: LoginComponent },
