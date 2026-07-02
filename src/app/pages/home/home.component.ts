@@ -48,14 +48,12 @@ export class HomeComponent implements OnInit {
     const filters = this.searchForm.value;
     let queryParams: any = {};
 
-    // Solo mandamos los filtros que el usuario tocó
     if (filters.operationType) queryParams.operationType = filters.operationType;
     if (filters.propertyType) queryParams.propertyType = filters.propertyType;
     if (filters.zone) queryParams.zone = filters.zone;
     if (filters.bedrooms) queryParams.bedrooms = filters.bedrooms;
     if (filters.bathrooms) queryParams.bathrooms = filters.bathrooms;
 
-    // Los mandamos a la ruta /buscar con todo el choclo de parámetros
     this.router.navigate(['/buscar'], { queryParams });
   }
 }

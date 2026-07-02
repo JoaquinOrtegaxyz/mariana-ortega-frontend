@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PropertyService } from '../../services/property.service';
-
-// Acá están los imports de los servicios nuevos bien puestos
 import { ConfigService } from '../../services/config.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -31,12 +29,21 @@ export class AdminPanelComponent implements OnInit {
   currentEditId: number | null = null;
   existingImages: any[] = [];
 
+  toastMessage: string = '';
+
+  showToast(msg: string) {
+    this.toastMessage = msg;
+    setTimeout(() => this.toastMessage = '', 4000);
+  }
+
   constructor(
     private fb: FormBuilder,
     private propertyService: PropertyService,
     private route: ActivatedRoute,
     private configService: ConfigService,
     private authService: AuthService
+
+
   ) {
     this.propertyForm = this.fb.group({
       title: ['', Validators.required],
@@ -74,11 +81,13 @@ export class AdminPanelComponent implements OnInit {
     // Apenas carga, le pega a la base de datos para traer el WhatsApp y las redes
     this.configService.getConfig().subscribe({
       next: (data) => {
-        this.configForm.patchValue({
-          whatsapp: data.whatsapp || '',
-          instagram: data.instagram || '',
-          facebook: data.facebook || ''
-        });
+        if(data) {
+          this.configForm.patchValue({
+            whatsapp: data.whatsapp || '',
+            instagram: data.instagram || '',
+            facebook: data.facebook || ''
+          });
+        }
       }
     });
   }
@@ -178,7 +187,10 @@ export class AdminPanelComponent implements OnInit {
   unarchiveProperty(id: number) {
     if (confirm('¿Restaurar esta propiedad? Volverá a estar visible para el público.')) {
       this.propertyService.unarchiveProperty(id).subscribe({
-        next: () => this.loadArchivedProperties(),
+        next: () => {
+           this.archivedProperties = this.archivedProperties.filter(p => p.id !== id);
+           this.showToast('¡Propiedad restaurada con éxito!');
+        },
       });
     }
   }
@@ -186,7 +198,10 @@ export class AdminPanelComponent implements OnInit {
   archiveProperty(id: number) {
     if (confirm('¿Seguro que querés archivar esta propiedad?')) {
       this.propertyService.archiveProperty(id).subscribe({
-        next: () => this.loadActiveProperties(),
+        next: () => {
+           this.activeProperties = this.activeProperties.filter(p => p.id !== id);
+           this.showToast('¡Propiedad archivada correctamente!');
+        },
       });
     }
   }
@@ -194,7 +209,10 @@ export class AdminPanelComponent implements OnInit {
   deletePermanently(id: number) {
     if (confirm('¡CUIDADO! Esto eliminará la propiedad para siempre.')) {
       this.propertyService.deletePropertyPermanently(id).subscribe({
-        next: () => this.loadArchivedProperties(),
+        next: () => {
+           this.archivedProperties = this.archivedProperties.filter(p => p.id !== id);
+           this.showToast('Propiedad eliminada de la base de datos');
+        },
       });
     }
   }
@@ -214,12 +232,40 @@ export class AdminPanelComponent implements OnInit {
     this.imagePreview = null;
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.propertyForm.valid) {
       this.isLoading = true;
       this.successMessage = '';
 
       const formValue = this.propertyForm.value;
+
+      // Por defecto cae en el centro de Necochea si el GPS no encuentra la calle
+      let lat = -38.5545;
+      let lon = -58.7396;
+
+      if (formValue.street && formValue.streetNumber) {
+         let calleMapeada = formValue.street.trim();
+
+         // Trampita: si pone "56", buscamos "Calle 56" para que OpenStreetMap entienda
+         if (!isNaN(Number(calleMapeada))) {
+            calleMapeada = 'Calle ' + calleMapeada;
+         }
+
+         const query = `${calleMapeada} ${formValue.streetNumber}, Necochea, Provincia de Buenos Aires, Argentina`;
+         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+
+         try {
+           const res = await fetch(url);
+           const data = await res.json();
+           if (data && data.length > 0) {
+             lat = parseFloat(data[0].lat);
+             lon = parseFloat(data[0].lon);
+           }
+         } catch (e) {
+           console.error('Error buscando el mapa, usando Necochea por defecto:', e);
+         }
+      }
+
       const payload = {
         title: formValue.title,
         description: formValue.description || '',
@@ -239,8 +285,8 @@ export class AdminPanelComponent implements OnInit {
           lotArea: formValue.lotArea || 0,
           hasGarage: false,
           age: 0,
-          latitude: 0,
-          longitude: 0
+          latitude: lat,
+          longitude: lon
         }
       };
 
@@ -249,13 +295,20 @@ export class AdminPanelComponent implements OnInit {
           next: (res) => {
              if (this.selectedFile && res.id) {
                this.propertyService.uploadImage(res.id, this.selectedFile).subscribe({
-                 next: () => {
-                   this.finishUpload('¡Propiedad actualizada con foto nueva!');
+                 next: () => this.finishUpload('¡Propiedad actualizada con foto nueva!'),
+                 error: (err) => {
+                   this.isLoading = false;
+                   alert('Se actualizó la propiedad pero falló la carga de la imagen. Intentá subirla de nuevo.');
                  }
                });
              } else {
                this.finishUpload('¡Propiedad actualizada!');
              }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error(err);
+            alert('Error al actualizar la propiedad. Revisá que los datos obligatorios estén completos.');
           }
         });
       } else {
@@ -263,11 +316,20 @@ export class AdminPanelComponent implements OnInit {
           next: (res) => {
             if (this.selectedFile && res.id) {
               this.propertyService.uploadImage(res.id, this.selectedFile).subscribe({
-                next: () => this.finishUpload('¡Propiedad y foto guardadas!')
+                next: () => this.finishUpload('¡Propiedad y foto guardadas!'),
+                error: (err) => {
+                  this.isLoading = false;
+                  alert('Se guardó la propiedad pero falló la carga de la foto. Intentá subirla desde "Editar".');
+                }
               });
             } else {
               this.finishUpload('¡Propiedad guardada sin foto!');
             }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error(err);
+            alert('Error al crear la propiedad. Revisá que los datos obligatorios estén completos.');
           }
         });
       }
@@ -278,20 +340,20 @@ export class AdminPanelComponent implements OnInit {
 
   finishUpload(msg: string) {
     this.isLoading = false;
-    this.successMessage = msg;
+    this.showToast(msg); // Llama al cartel flotante
     this.propertyForm.reset();
-    this.propertyForm.patchValue({ propertyType: '', operationType: '' });
+    this.propertyForm.patchValue({ propertyType: '', operationType: '', zone: '' });
     this.clearImage();
     this.isEditing = false;
     this.currentEditId = null;
     this.existingImages = [];
+    this.loadActiveProperties(); // Refresca la lista de fondo
   }
 
   onConfigSubmit() {
     if (this.configForm.valid) {
       const formValues = this.configForm.value;
 
-      // Actualizar redes y WhatsApp
       const configData = {
         whatsapp: formValues.whatsapp,
         instagram: formValues.instagram,
@@ -306,7 +368,6 @@ export class AdminPanelComponent implements OnInit {
         error: () => alert('Hubo un error al guardar las redes.')
       });
 
-      // Actualizar contraseña solo si completaron los dos campos
       if (formValues.currentPassword && formValues.newPassword) {
         const passData = {
           currentPassword: formValues.currentPassword,
