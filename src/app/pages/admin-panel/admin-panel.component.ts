@@ -78,7 +78,6 @@ export class AdminPanelComponent implements OnInit {
       }
     });
 
-    // Apenas carga, le pega a la base de datos para traer el WhatsApp y las redes
     this.configService.getConfig().subscribe({
       next: (data) => {
         if(data) {
@@ -266,23 +265,25 @@ export class AdminPanelComponent implements OnInit {
          }
       }
 
+      // PAYLOAD BLINDADO: Fuerza todo a número para que Java no llore con los @PositiveOrZero
       const payload = {
         title: formValue.title,
         description: formValue.description || '',
-        price: formValue.price || 0,
+        price: formValue.price ? Number(formValue.price) : 0,
         propertyType: formValue.propertyType || null,
         operationType: formValue.operationType || null,
         location: {
           street: formValue.street || '',
           streetNumber: formValue.streetNumber ? formValue.streetNumber.toString() : '',
+          zone: formValue.zone ? formValue.zone : null, // Manda null si no hay zona, evita que el Enum explote
           floor: '',
           apartment: ''
         },
         characteristics: {
-          bedrooms: formValue.bedrooms || 0,
-          bathrooms: formValue.bathrooms || 0,
-          totalArea: formValue.totalArea || 0,
-          lotArea: formValue.lotArea || 0,
+          bedrooms: formValue.bedrooms ? Number(formValue.bedrooms) : 0,
+          bathrooms: formValue.bathrooms ? Number(formValue.bathrooms) : 0,
+          totalArea: formValue.totalArea ? Number(formValue.totalArea) : 0,
+          lotArea: formValue.lotArea ? Number(formValue.lotArea) : 0,
           hasGarage: false,
           age: 0,
           latitude: lat,
@@ -307,8 +308,8 @@ export class AdminPanelComponent implements OnInit {
           },
           error: (err) => {
             this.isLoading = false;
-            console.error(err);
-            alert('Error al actualizar la propiedad. Revisá que los datos obligatorios estén completos.');
+            console.error('DETALLE DEL ERROR DEL BACKEND (EDITAR):', err.error);
+            alert('Error al actualizar la propiedad. Apretá F12 y mirá la consola para ver qué campo rebotó.');
           }
         });
       } else {
@@ -328,8 +329,8 @@ export class AdminPanelComponent implements OnInit {
           },
           error: (err) => {
             this.isLoading = false;
-            console.error(err);
-            alert('Error al crear la propiedad. Revisá que los datos obligatorios estén completos.');
+            console.error('DETALLE DEL ERROR DEL BACKEND (CREAR):', err.error);
+            alert('Error al crear la propiedad. Apretá F12 y mirá la consola para ver qué campo rebotó.');
           }
         });
       }
