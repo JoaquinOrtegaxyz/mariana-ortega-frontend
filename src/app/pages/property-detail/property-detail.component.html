@@ -69,50 +69,30 @@
             <p class="text-gray-600 leading-relaxed text-lg whitespace-pre-line">{{ property.description || 'Sin descripción disponible.' }}</p>
           </div>
 
-          <div *ngIf="mapUrl" class="mt-8 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-4 flex items-center gap-2">
-              <svg class="w-6 h-6 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-              Ubicación en el mapa
-            </h3>
-            <div class="w-full h-64 md:h-80 rounded-2xl overflow-hidden border border-gray-200">
-              <iframe [src]="mapUrl" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-            </div>
-          </div>
-
         </div>
 
-        <div class="space-y-6">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">¿Querés ir a verla?</h3>
-            <p class="text-sm text-gray-500 mb-4">Comunicate directo con nosotros para coordinar una visita.</p>
+        <div class="space-y-6 sticky top-28 self-start w-full pb-8">
 
-            <a [href]="'https://wa.me/5492262579622?text=Hola, me interesa la propiedad: ' + property.title" target="_blank" class="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1fbc5b] text-white font-bold py-4 px-4 rounded-xl transition-all shadow-md hover:-translate-y-1">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.966 0c3.178.001 6.165 1.24 8.413 3.494 2.25 2.253 3.487 5.244 3.485 8.423-.003 6.616-5.34 11.965-11.909 11.965-2.005-.001-3.973-.507-5.729-1.476L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.4 0 9.792-4.401 9.794-9.802.001-2.616-1.013-5.076-2.86-6.925C16.4 1.988 13.931 .969 11.965.969c-5.404 0-9.8 4.403-9.802 9.804-.001 1.935.539 3.473 1.45 4.945l-1.004 3.665 3.758-.988z"/></svg>
+          <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">¿Querés ir a verla?</h3>
+            <p class="text-gray-500 mb-6">Comunicate directo con nosotros para sacarte todas las dudas o coordinar una visita al inmueble.</p>
+
+            <a [href]="'https://wa.me/5492262579622?text=Hola Mariana, me interesa la propiedad: ' + property.title" target="_blank" class="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1fbc5b] text-white font-bold py-4 px-4 rounded-xl transition-all shadow-md hover:-translate-y-1 text-lg">
+              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.966 0c3.178.001 6.165 1.24 8.413 3.494 2.25 2.253 3.487 5.244 3.485 8.423-.003 6.616-5.34 11.965-11.909 11.965-2.005-.001-3.973-.507-5.729-1.476L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.4 0 9.792-4.401 9.794-9.802.001-2.616-1.013-5.076-2.86-6.925C16.4 1.988 13.931 .969 11.965.969c-5.404 0-9.8 4.403-9.802 9.804-.001 1.935.539 3.473 1.45 4.945l-1.004 3.665 3.758-.988z"/></svg>
               Contactar por WhatsApp
             </a>
           </div>
 
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-              Dejanos tu consulta
+          <div *ngIf="mapUrl" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+              <svg class="w-5 h-5 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+              Ubicación
             </h3>
-
-            <form [formGroup]="contactForm" (ngSubmit)="submitContact()" class="space-y-4">
-              <div>
-                <input type="text" formControlName="name" placeholder="Tu nombre" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none text-sm transition-all">
-              </div>
-              <div>
-                <input type="text" formControlName="phone" placeholder="Tu teléfono" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none text-sm transition-all">
-              </div>
-              <div>
-                <textarea formControlName="message" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-[#680300] focus:border-[#680300] outline-none text-sm transition-all resize-none"></textarea>
-              </div>
-              <button type="submit" class="w-full bg-[#3d0200] hover:bg-[#680300] text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md">
-                Enviar mensaje
-              </button>
-            </form>
+            <div class="w-full h-64 rounded-2xl overflow-hidden border border-gray-200">
+              <iframe [src]="mapUrl" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
           </div>
+
         </div>
 
       </div>
