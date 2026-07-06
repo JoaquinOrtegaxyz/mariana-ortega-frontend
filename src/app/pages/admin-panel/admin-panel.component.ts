@@ -51,6 +51,7 @@ export class AdminPanelComponent implements OnInit {
       price: [null],
       propertyType: [''],
       operationType: [''],
+      zone:[''],
       street: [''],
       streetNumber: [''],
       bedrooms: [null],
@@ -238,14 +239,12 @@ export class AdminPanelComponent implements OnInit {
 
       const formValue = this.propertyForm.value;
 
-      // Por defecto cae en el centro de Necochea si el GPS no encuentra la calle
       let lat = -38.5545;
       let lon = -58.7396;
 
       if (formValue.street && formValue.streetNumber) {
          let calleMapeada = formValue.street.trim();
 
-         // Trampita: si pone "56", buscamos "Calle 56" para que OpenStreetMap entienda
          if (!isNaN(Number(calleMapeada))) {
             calleMapeada = 'Calle ' + calleMapeada;
          }
@@ -265,7 +264,6 @@ export class AdminPanelComponent implements OnInit {
          }
       }
 
-      // PAYLOAD BLINDADO: Fuerza todo a número para que Java no llore con los @PositiveOrZero
       const payload = {
         title: formValue.title,
         description: formValue.description || '',
@@ -275,7 +273,7 @@ export class AdminPanelComponent implements OnInit {
         location: {
           street: formValue.street || '',
           streetNumber: formValue.streetNumber ? formValue.streetNumber.toString() : '',
-          zone: formValue.zone ? formValue.zone : null, // Manda null si no hay zona, evita que el Enum explote
+          zone: formValue.zone ? formValue.zone : null,
           floor: '',
           apartment: ''
         },
