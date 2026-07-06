@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-  private apiUrl = 'http://localhost:8080/api/config';
+  private apiUrl = `${environment.apiUrl}/config`;
 
-  // Esto es lo que va a avisarle a toda la página si cambian el número
   private configSubject = new BehaviorSubject<any>(null);
   public config$ = this.configSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.loadConfig(); // Apenas abre la página, va a buscar los datos
+    this.loadConfig();
   }
 
   loadConfig() {

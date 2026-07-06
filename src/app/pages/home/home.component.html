@@ -94,5 +94,14 @@
         <div class="col-span-full text-center py-12 text-gray-500" *ngIf="!isLoading">No hay propiedades cargadas todavía.</div>
       }
     </div>
+
+    @if (!isLastPage && properties.length > 0) {
+      <div class="flex justify-center mt-12">
+        <button (click)="cargarMas()" [disabled]="isLoadingMore" class="bg-white border-2 border-[#680300] text-[#680300] hover:bg-[#680300] hover:text-white font-bold py-3.5 px-10 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-wait">
+          {{ isLoadingMore ? 'Cargando más propiedades...' : 'Ver más propiedades' }}
+        </button>
+      </div>
+    }
+
   </div>
 </div>

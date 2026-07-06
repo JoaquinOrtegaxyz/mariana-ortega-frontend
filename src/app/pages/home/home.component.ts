@@ -15,6 +15,9 @@ export class HomeComponent implements OnInit {
   properties: any[] = [];
   isLoading: boolean = true;
   searchForm: FormGroup;
+  currentPage: number = 0;
+  isLastPage: boolean = false;
+  isLoadingMore: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,5 +58,29 @@ export class HomeComponent implements OnInit {
     if (filters.bathrooms) queryParams.bathrooms = filters.bathrooms;
 
     this.router.navigate(['/buscar'], { queryParams });
+  }
+
+  loadProperties(page: number = 0) {
+    this.isLoading = page === 0;
+    this.isLoadingMore = page > 0;
+
+    this.propertyService.getProperties(page, 9).subscribe({
+      next: (res) => {
+        if (page === 0) {
+          this.properties = res.content;
+        } else {
+          this.properties = [...this.properties, ...res.content];
+        }
+
+        this.isLastPage = res.last;
+        this.isLoading = false;
+        this.isLoadingMore = false;
+      }
+    });
+  }
+
+  cargarMas() {
+    this.currentPage++;
+    this.loadProperties(this.currentPage);
   }
 }
