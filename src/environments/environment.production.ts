@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://inmobiliaria-necochea.vercel.app/api'
+  apiUrl: 'https://mariana-ortega-backend-production.up.railway.app/api'
 };
