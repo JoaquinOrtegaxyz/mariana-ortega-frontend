@@ -1,7 +1,7 @@
 import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component'; // <-- Cambiamos App por AppComponent
+import { AppComponent } from './app/app.component';
 
-bootstrapApplication(AppComponent, appConfig)       // <-- Acá también
+bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
