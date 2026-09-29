@@ -1,4 +1,4 @@
-<div class="max-w-6xl mx-auto px-4 py-10">
+<div class="max-w-6xl mx-auto px-4 pt-28 md:pt-36 pb-10">
 
   <h1 class="text-3xl font-black text-gray-900 mb-8 tracking-tight">Panel de Control</h1>
 
@@ -21,7 +21,34 @@
     <div class="p-6 border-b border-gray-100 bg-gray-50/50">
       <h2 class="text-xl font-bold text-gray-800">Propiedades Publicadas</h2>
     </div>
-    <div class="overflow-x-auto">
+
+    <!-- Mobile Card View -->
+    <div class="block md:hidden divide-y divide-gray-100">
+      <div *ngIf="activeProperties.length === 0" class="p-8 text-center text-gray-500 font-medium">
+        No hay propiedades activas. ¡Cargá la primera!
+      </div>
+      <div *ngFor="let prop of activeProperties" class="p-4 flex flex-col gap-3">
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold text-gray-900 text-base leading-tight">{{ prop.title }}</h3>
+          <span class="px-2.5 py-0.5 text-xs font-black rounded-lg uppercase tracking-wide flex-shrink-0" [ngClass]="prop.operationType === 'SALE' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'">
+            {{ prop.operationType === 'SALE' ? 'Venta' : 'Alquiler' }}
+          </span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-extrabold text-[#680300]">
+            <span *ngIf="prop.price > 0">U$S {{ prop.price | number:'1.0-0' }}</span>
+            <span *ngIf="!prop.price || prop.price === 0" class="text-xs font-bold bg-[#680300]/10 text-[#680300] px-2 py-0.5 rounded-md">Consultar valor</span>
+          </span>
+          <div class="flex gap-2">
+            <button (click)="editProperty(prop)" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg font-bold text-xs border border-blue-200">Editar</button>
+            <button (click)="archiveProperty(prop.id)" class="text-amber-600 hover:bg-amber-50 px-3 py-1.5 rounded-lg font-bold text-xs border border-amber-200">Archivar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="border-b border-gray-200 text-gray-500 text-sm bg-white">
@@ -63,7 +90,29 @@
         Propiedades Archivadas
       </h2>
     </div>
-    <div class="overflow-x-auto">
+
+    <!-- Mobile Card View -->
+    <div class="block md:hidden divide-y divide-gray-100">
+      <div *ngIf="archivedProperties.length === 0" class="p-8 text-center text-gray-500 font-medium">
+        La papelera está vacía.
+      </div>
+      <div *ngFor="let prop of archivedProperties" class="p-4 flex flex-col gap-3">
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold text-gray-600 text-base line-through leading-tight">{{ prop.title }}</h3>
+          <span class="font-semibold text-gray-500 text-xs">
+            <span *ngIf="prop.price > 0">U$S {{ prop.price | number:'1.0-0' }}</span>
+            <span *ngIf="!prop.price || prop.price === 0" class="italic">Consultar</span>
+          </span>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button (click)="unarchiveProperty(prop.id)" class="text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg font-bold text-xs border border-green-200">Restaurar</button>
+          <button (click)="deletePermanently(prop.id)" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold text-xs border border-red-200">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="border-b border-gray-200 text-gray-500 text-sm bg-white">

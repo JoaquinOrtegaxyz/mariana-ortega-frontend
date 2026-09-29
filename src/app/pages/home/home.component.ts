@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PropertyCardComponent } from '../../shared/components/property-card/property-card.component';
 import { PropertyService } from '../../services/property.service';
 
@@ -9,7 +10,8 @@ import { PropertyService } from '../../services/property.service';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule, PropertyCardComponent],
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
   properties: any[] = [];
@@ -18,13 +20,14 @@ export class HomeComponent implements OnInit {
   currentPage: number = 0;
   isLastPage: boolean = false;
   isLoadingMore: boolean = false;
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private propertyService: PropertyService
+    private propertyService: PropertyService,
+    private cdr: ChangeDetectorRef
   ) {
-    // Acá están TODOS tus filtros
     this.searchForm = this.fb.group({
       operationType: [''],
       propertyType: [''],
@@ -37,16 +40,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.propertyService.getProperties(0, 6).subscribe({
-      next: (response) => {
-        this.properties = response.content;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al traer propiedades del backend:', error);
-        this.isLoading = false;
-      }
-    });
+    this.loadProperties(0);
   }
 
   onSearch() {
@@ -67,20 +61,30 @@ export class HomeComponent implements OnInit {
   loadProperties(page: number = 0) {
     this.isLoading = page === 0;
     this.isLoadingMore = page > 0;
+    this.cdr.markForCheck();
 
-    this.propertyService.getProperties(page, 9).subscribe({
-      next: (res) => {
-        if (page === 0) {
-          this.properties = res.content;
-        } else {
-          this.properties = [...this.properties, ...res.content];
+    this.propertyService.getProperties(page, 9)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          if (page === 0) {
+            this.properties = res.content || [];
+          } else {
+            this.properties = [...this.properties, ...(res.content || [])];
+          }
+
+          this.isLastPage = res.last;
+          this.isLoading = false;
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error al traer propiedades del backend:', error);
+          this.isLoading = false;
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
         }
-
-        this.isLastPage = res.last;
-        this.isLoading = false;
-        this.isLoadingMore = false;
-      }
-    });
+      });
   }
 
   cargarMas() {

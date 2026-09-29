@@ -1,4 +1,4 @@
-<div class="bg-zinc-50 min-h-screen py-8">
+<div class="bg-zinc-50 min-h-screen pt-28 md:pt-36 pb-12">
   <div class="max-w-6xl mx-auto px-4">
 
     <div *ngIf="isLoading" class="text-center py-24">
@@ -54,6 +54,8 @@
           <div class="flex gap-3 mt-4 overflow-x-auto pb-2">
             <img *ngFor="let img of images; let i = index"
                  [src]="img"
+                 loading="lazy"
+                 decoding="async"
                  (click)="setMainImage(i)"
                  [ngClass]="{'border-4 border-[#680300] opacity-100': currentImageIndex === i, 'opacity-60': currentImageIndex !== i}"
                  class="w-24 h-24 object-cover rounded-xl cursor-pointer hover:opacity-100 transition-all shadow-sm">
