@@ -152,6 +152,8 @@
               <option value="QUEQUEN">Quequén</option>
               <option value="VILLA_DEL_DEPORTISTA">Villa del Deportista</option>
               <option value="PARQUE">Barrio Parque</option>
+              <option value="NUEVE_DE_JULIO">9 de Julio</option>
+              <option value="INTERMEDIA">Intermedia</option>
               <option value="OTRO">Otro</option>
           </select>
         </div>
@@ -187,21 +189,39 @@
       </div>
 
       <div class="pt-4 border-t border-gray-100">
-        <label class="block text-sm font-semibold text-gray-700 mb-4">
-          {{ isEditing ? 'Subir nueva foto (Se sumará a la galería)' : 'Foto de Portada' }}
-        </label>
-        <div class="flex flex-col md:flex-row gap-6 items-start">
-          <div class="w-full md:w-1/2">
-            <label class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors relative overflow-hidden group">
-              <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <p class="mb-2 text-sm text-gray-500 font-semibold group-hover:text-[#680300]"><span class="font-bold">Hacé clic para subir</span></p>
-              </div>
-              <input type="file" class="hidden" accept="image/png, image/jpeg, image/jpg" (change)="onFileSelected($event)" />
-            </label>
-          </div>
-          <div *ngIf="imagePreview" class="w-full md:w-1/2 h-40 relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-            <img [src]="imagePreview" class="w-full h-full object-cover">
-            <button type="button" (click)="clearImage()" class="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-lg shadow-md">Borrar</button>
+        <div class="flex items-center justify-between mb-4">
+          <label class="block text-sm font-semibold text-gray-700">
+            {{ isEditing ? 'Subir fotos nuevas (Podés seleccionar varias a la vez)' : 'Fotos de la propiedad (Podés seleccionar varias a la vez)' }}
+          </label>
+          <span *ngIf="selectedFiles.length > 0" class="text-xs font-bold bg-[#680300]/10 text-[#680300] px-3 py-1 rounded-full">
+            {{ selectedFiles.length }} foto(s) seleccionada(s)
+          </span>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors relative overflow-hidden group">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+              <svg class="w-8 h-8 text-gray-400 group-hover:text-[#680300] mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <p class="mb-1 text-sm text-gray-600 font-semibold group-hover:text-[#680300]"><span class="font-bold">Hacé clic para seleccionar una o varias fotos</span></p>
+              <p class="text-xs text-gray-400">JPG, PNG, WEBP (máx. 15MB c/u)</p>
+            </div>
+            <input type="file" multiple class="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" (change)="onFileSelected($event)" />
+          </label>
+
+          <!-- Previsualizaciones de fotos a subir -->
+          <div *ngIf="imagePreviews.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+            <div *ngFor="let preview of imagePreviews; let i = index" class="relative group/preview rounded-xl overflow-hidden border border-gray-200 bg-white h-28 shadow-sm">
+              <img [src]="preview" class="w-full h-full object-cover">
+              <button type="button" (click)="removeSelectedFile(i)" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white p-1 rounded-md shadow-md opacity-90 hover:opacity-100 transition-opacity" title="Quitar">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+              <span class="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">#{{ i + 1 }}</span>
+            </div>
+            <div class="col-span-full flex justify-end">
+              <button type="button" (click)="clearImages()" class="text-xs font-semibold text-red-600 hover:text-red-800">
+                Limpiar selección
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -294,5 +314,15 @@
 
   </div>
 
+  <!-- Notificación Flotante (Toast) -->
+  <div *ngIf="toastMessage" 
+       class="fixed bottom-6 right-6 z-50 bg-[#680300] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-red-400/30 transition-all duration-300">
+    <div class="bg-green-500 text-white rounded-full p-1 flex items-center justify-center shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    <span class="font-bold text-sm tracking-wide">{{ toastMessage }}</span>
+  </div>
 
 </div>

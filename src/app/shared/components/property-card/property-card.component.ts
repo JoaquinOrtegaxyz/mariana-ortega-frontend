@@ -13,8 +13,10 @@ export class PropertyCardComponent {
   @Input() property: any;
 
   getCoverImage(): string {
-    // Tu backend ya manda un campo directo que se llama coverImageUrl
     if (this.property?.coverImageUrl) {
+      if (this.property.coverImageUrl.includes('/upload/')) {
+        return this.property.coverImageUrl.replace('/upload/', '/upload/w_600,h_400,c_fill,f_auto,q_auto/');
+      }
       return this.property.coverImageUrl;
     }
     return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600';

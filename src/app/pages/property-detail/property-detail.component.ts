@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { PropertyService } from '../../services/property.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-property-detail',
@@ -21,15 +22,52 @@ export class PropertyDetailComponent implements OnInit {
   mapUrl: SafeResourceUrl | null = null;
   linkCopiado: boolean = false;
 
+  whatsappNumber: string = '5492262579622';
+  isLightboxOpen: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private propertyService: PropertyService,
+    private configService: ConfigService,
     private sanitizer: DomSanitizer,
     private meta: Meta,
     private title: Title
   ) {}
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (!this.isLightboxOpen) return;
+    if (event.key === 'Escape') {
+      this.closeLightbox();
+    } else if (event.key === 'ArrowRight') {
+      this.nextImage();
+    } else if (event.key === 'ArrowLeft') {
+      this.prevImage();
+    }
+  }
+
+  openLightbox(index?: number) {
+    if (index !== undefined) {
+      this.currentImageIndex = index;
+    }
+    this.isLightboxOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeLightbox() {
+    this.isLightboxOpen = false;
+    document.body.style.overflow = 'auto';
+  }
+
   ngOnInit(): void {
+    this.configService.getConfig().subscribe({
+      next: (config) => {
+        if (config?.whatsapp) {
+          this.whatsappNumber = config.whatsapp.replace(/\D/g, '');
+        }
+      }
+    });
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {

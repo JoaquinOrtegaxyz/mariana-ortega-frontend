@@ -17,16 +17,18 @@ export class PropertyService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  searchProperties(operationType?: string, propertyType?: string, zone?: string, bedrooms?: number, bathrooms?: number, page: number = 0, size: number = 12): Observable<any> {
+  searchProperties(operationType?: string, propertyType?: string, zone?: string, bedrooms?: number, bathrooms?: number, minPrice?: number, maxPrice?: number, page: number = 0, size: number = 12): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
     if (operationType) params = params.set('operationType', operationType);
     if (propertyType) params = params.set('propertyType', propertyType);
-    if (zone) params = params.set('zone', zone); // <--- ACÁ VIAJA LA ZONA
+    if (zone) params = params.set('zone', zone);
     if (bedrooms) params = params.set('bedrooms', bedrooms.toString());
     if (bathrooms) params = params.set('bathrooms', bathrooms.toString());
+    if (minPrice != null && minPrice > 0) params = params.set('minPrice', minPrice.toString());
+    if (maxPrice != null && maxPrice > 0) params = params.set('maxPrice', maxPrice.toString());
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params });
   }
@@ -65,6 +67,12 @@ export class PropertyService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(`${this.imagesUrl}/upload/${propertyId}`, formData);
+  }
+
+  uploadMultipleImages(propertyId: number, files: File[]): Observable<any> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file));
+    return this.http.post(`${this.imagesUrl}/upload-multiple/${propertyId}`, formData);
   }
 
   setCoverImage(propertyId: number, imageId: number): Observable<any> {

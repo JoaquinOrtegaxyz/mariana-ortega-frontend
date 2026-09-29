@@ -19,8 +19,8 @@ export class AdminPanelComponent implements OnInit {
   isLoading: boolean = false;
   successMessage: string = '';
 
-  selectedFile: File | null = null;
-  imagePreview: string | null = null;
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
 
   activeProperties: any[] = [];
   archivedProperties: any[] = [];
@@ -95,7 +95,7 @@ export class AdminPanelComponent implements OnInit {
   changeTab(tab: string) {
     this.activeTab = tab;
     this.successMessage = '';
-    this.clearImage();
+    this.clearImages();
 
     if (tab === 'mis-propiedades' || tab === 'archivados') {
       this.isEditing = false;
@@ -137,6 +137,7 @@ export class AdminPanelComponent implements OnInit {
           price: fullProp.price || null,
           propertyType: fullProp.propertyType || '',
           operationType: fullProp.operationType || '',
+          zone: fullProp.location?.zone || '',
           street: fullProp.location?.street || '',
           streetNumber: fullProp.location?.streetNumber || '',
           bedrooms: fullProp.characteristics?.bedrooms || null,
@@ -218,18 +219,31 @@ export class AdminPanelComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => this.imagePreview = e.target.result;
-      reader.readAsDataURL(file);
+    const files: FileList = event.target.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 15 * 1024 * 1024) {
+          alert(`El archivo "${file.name}" es demasiado pesado (máximo 15 MB).`);
+          continue;
+        }
+        this.selectedFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e: any) => this.imagePreviews.push(e.target.result);
+        reader.readAsDataURL(file);
+      }
+      event.target.value = '';
     }
   }
 
-  clearImage() {
-    this.selectedFile = null;
-    this.imagePreview = null;
+  removeSelectedFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  clearImages() {
+    this.selectedFiles = [];
+    this.imagePreviews = [];
   }
 
   async onSubmit() {
@@ -292,16 +306,16 @@ export class AdminPanelComponent implements OnInit {
       if (this.isEditing && this.currentEditId) {
         this.propertyService.updateProperty(this.currentEditId, payload).subscribe({
           next: (res) => {
-             if (this.selectedFile && res.id) {
-               this.propertyService.uploadImage(res.id, this.selectedFile).subscribe({
-                 next: () => this.finishUpload('¡Propiedad actualizada con foto nueva!'),
+             if (this.selectedFiles.length > 0 && res.id) {
+               this.propertyService.uploadMultipleImages(res.id, this.selectedFiles).subscribe({
+                 next: () => this.finishUpload(`¡Propiedad actualizada con éxito y ${this.selectedFiles.length} foto(s) nueva(s)!`),
                  error: (err) => {
                    this.isLoading = false;
-                   alert('Se actualizó la propiedad pero falló la carga de la imagen. Intentá subirla de nuevo.');
+                   alert('Se actualizó la propiedad pero falló la carga de las imágenes. Intentá subirlas desde "Editar".');
                  }
                });
              } else {
-               this.finishUpload('¡Propiedad actualizada!');
+               this.finishUpload('¡Propiedad actualizada con éxito!');
              }
           },
           error: (err) => {
@@ -313,16 +327,16 @@ export class AdminPanelComponent implements OnInit {
       } else {
         this.propertyService.createProperty(payload).subscribe({
           next: (res) => {
-            if (this.selectedFile && res.id) {
-              this.propertyService.uploadImage(res.id, this.selectedFile).subscribe({
-                next: () => this.finishUpload('¡Propiedad y foto guardadas!'),
+            if (this.selectedFiles.length > 0 && res.id) {
+              this.propertyService.uploadMultipleImages(res.id, this.selectedFiles).subscribe({
+                next: () => this.finishUpload(`¡Propiedad creada con éxito y ${this.selectedFiles.length} foto(s) guardadas!`),
                 error: (err) => {
                   this.isLoading = false;
-                  alert('Se guardó la propiedad pero falló la carga de la foto. Intentá subirla desde "Editar".');
+                  alert('Se guardó la propiedad pero falló la carga de las fotos. Podés subirlas desde "Editar".');
                 }
               });
             } else {
-              this.finishUpload('¡Propiedad guardada sin foto!');
+              this.finishUpload('¡Propiedad creada con éxito!');
             }
           },
           error: (err) => {
@@ -339,14 +353,14 @@ export class AdminPanelComponent implements OnInit {
 
   finishUpload(msg: string) {
     this.isLoading = false;
-    this.showToast(msg); // Llama al cartel flotante
+    this.showToast(msg);
     this.propertyForm.reset();
     this.propertyForm.patchValue({ propertyType: '', operationType: '', zone: '' });
-    this.clearImage();
+    this.clearImages();
     this.isEditing = false;
     this.currentEditId = null;
     this.existingImages = [];
-    this.loadActiveProperties(); // Refresca la lista de fondo
+    this.changeTab('mis-propiedades');
   }
 
   onConfigSubmit() {

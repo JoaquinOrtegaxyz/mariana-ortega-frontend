@@ -30,7 +30,9 @@ export class HomeComponent implements OnInit {
       propertyType: [''],
       zone: [''],
       bedrooms: [''],
-      bathrooms: ['']
+      bathrooms: [''],
+      minPrice: [''],
+      maxPrice: ['']
     });
   }
 
@@ -56,6 +58,8 @@ export class HomeComponent implements OnInit {
     if (filters.zone) queryParams.zone = filters.zone;
     if (filters.bedrooms) queryParams.bedrooms = filters.bedrooms;
     if (filters.bathrooms) queryParams.bathrooms = filters.bathrooms;
+    if (filters.minPrice) queryParams.minPrice = filters.minPrice;
+    if (filters.maxPrice) queryParams.maxPrice = filters.maxPrice;
 
     this.router.navigate(['/buscar'], { queryParams });
   }
