@@ -11,6 +11,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <!-- Resource Hints para acelerar conexión TLS y DNS a Cloudinary y Railway -->
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+  <link rel="dns-prefetch" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://mariana-ortega-backend-production.up.railway.app" crossorigin>
+  <link rel="dns-prefetch" href="https://mariana-ortega-backend-production.up.railway.app">
+
+  <!-- Preload de imagen principal del Hero para mejorar LCP -->
+  <link rel="preload" as="image" href="assets/necochea.jpeg" fetchpriority="high">
 </head>
 <body class="bg-white">
   <app-root></app-root>
