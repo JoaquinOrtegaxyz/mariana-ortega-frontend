@@ -22,15 +22,12 @@ export class PropertyCardComponent {
     return this._property;
   }
 
-  getCoverImage(): string {
-    if (this.property?.coverImageUrl) {
-      if (this.property.coverImageUrl.includes('/upload/') && !this.property.coverImageUrl.includes('/upload/f_auto')) {
-        return this.property.coverImageUrl.replace('/upload/', '/upload/f_auto,q_auto,w_600/');
+  computeCoverImage(prop: any): string {
+    if (prop?.coverImageUrl) {
+      if (prop.coverImageUrl.includes('/upload/') && !prop.coverImageUrl.includes('/upload/f_auto')) {
+        return prop.coverImageUrl.replace('/upload/', '/upload/f_auto,q_auto,w_600/');
       }
-      return this.property.coverImageUrl;
-    }
-    return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600';
-  }
+      return prop.coverImageUrl;
     }
     return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600';
   }
