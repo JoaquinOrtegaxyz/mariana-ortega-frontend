@@ -1,102 +1,158 @@
-<div class="relative w-full min-h-[650px] flex items-center justify-center bg-white overflow-hidden">
+<div class="relative w-full min-h-[550px] md:min-h-[620px] flex items-center justify-center bg-white overflow-hidden">
   <img src="assets/necochea.jpeg" alt="Panorámica de Necochea" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover z-0">
-  <div class="absolute inset-0 bg-black/30 z-10"></div>
-  <div class="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-white to-white/0 z-20 pointer-events-none"></div>
+  <div class="absolute inset-0 bg-black/40 z-10"></div>
+  <div class="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-white to-white/0 z-20 pointer-events-none"></div>
 
-  <div class="relative z-30 max-w-7xl mx-auto px-4 w-full flex flex-col items-center pt-32 pb-16 md:pt-36 md:pb-24">
-    <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 md:mb-10 text-center tracking-tight drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)]">
+  <div class="relative z-30 max-w-5xl mx-auto px-4 w-full flex flex-col items-center pt-24 pb-12 sm:pt-28 md:pt-32 md:pb-20">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 sm:mb-8 text-center tracking-tight drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] px-2">
       Encontrá tu próximo hogar
     </h1>
 
-    <div class="bg-white/95 backdrop-blur-sm p-5 sm:p-7 rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 w-full max-w-5xl flex flex-col gap-5">
-      <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col gap-5 w-full">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2.5 pl-1">Operación</label>
-            <select formControlName="operationType" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-4 cursor-pointer outline-none shadow-sm transition-all">
-              <option value="">Cualquiera</option>
-              <option value="SALE">Comprar</option>
-              <option value="RENT">Alquilar</option>
-            </select>
-          </div>
+    <!-- Tarjeta de Búsqueda Moderna y Compacta -->
+    <div class="bg-white/95 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 w-full max-w-4xl flex flex-col gap-4">
+      
+      <!-- Pestañas de Operación (Comprar / Alquilar) -->
+      <div class="flex items-center justify-center sm:justify-start">
+        <div class="inline-flex p-1 bg-gray-100 rounded-xl">
+          <button type="button" 
+                  (click)="setOperationType('')" 
+                  [ngClass]="{'bg-[#680300] text-white shadow-sm': !searchForm.value.operationType, 'text-gray-600 hover:text-gray-900': searchForm.value.operationType}" 
+                  class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer">
+            Todas
+          </button>
+          <button type="button" 
+                  (click)="setOperationType('SALE')" 
+                  [ngClass]="{'bg-[#680300] text-white shadow-sm': searchForm.value.operationType === 'SALE', 'text-gray-600 hover:text-gray-900': searchForm.value.operationType !== 'SALE'}" 
+                  class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer">
+            Comprar
+          </button>
+          <button type="button" 
+                  (click)="setOperationType('RENT')" 
+                  [ngClass]="{'bg-[#680300] text-white shadow-sm': searchForm.value.operationType === 'RENT', 'text-gray-600 hover:text-gray-900': searchForm.value.operationType !== 'RENT'}" 
+                  class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer">
+            Alquilar
+          </button>
+        </div>
+      </div>
 
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2.5 pl-1">Inmueble</label>
-            <select formControlName="propertyType" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-4 cursor-pointer outline-none shadow-sm transition-all">
-              <option value="">Todos</option>
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col gap-3 sm:gap-4 w-full">
+        
+        <!-- Fila Principal (Inmueble y Zona) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Inmueble</label>
+            <select formControlName="propertyType" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 sm:p-3.5 cursor-pointer outline-none transition-all">
+              <option value="">Todos los inmuebles</option>
               <option value="HOUSE">Casa</option>
               <option value="APARTMENT">Departamento</option>
-              <option value="COMMERCIAL">Local</option>
-              <option value="LAND">Terreno</option>
+              <option value="COMMERCIAL">Local Comercial</option>
+              <option value="LAND">Terreno / Lote</option>
             </select>
           </div>
 
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2.5 pl-1">Zona o Barrio</label>
-            <select formControlName="zone" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-4 cursor-pointer outline-none shadow-sm transition-all">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Zona o Barrio</label>
+            <select formControlName="zone" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 sm:p-3.5 cursor-pointer outline-none transition-all">
               <option value="">Todas las zonas</option>
               <option value="CENTRO">Centro</option>
-              <option value="PLAYA">Playa</option>
+              <option value="PLAYA">Playa (Villa Díaz Vélez)</option>
+              <option value="PUERTO">Puerto</option>
               <option value="QUEQUEN">Quequén</option>
               <option value="VILLA_DEL_DEPORTISTA">Villa del Deportista</option>
+              <option value="PARQUE">Barrio Parque</option>
+              <option value="NUEVE_DE_JULIO">9 de Julio</option>
+              <option value="INTERMEDIA">Intermedia</option>
+              <option value="OTRO">Otro</option>
             </select>
           </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2 pl-1">Dormitorios</label>
-            <select formControlName="bedrooms" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 cursor-pointer outline-none shadow-sm transition-all">
-              <option value="">Indistinto</option>
+          <div class="hidden lg:block">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Dormitorios</label>
+            <select formControlName="bedrooms" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3 sm:p-3.5 cursor-pointer outline-none transition-all">
+              <option value="">Cualquier cantidad</option>
               <option value="1">1 o más</option>
               <option value="2">2 o más</option>
               <option value="3">3 o más</option>
               <option value="4">4 o más</option>
             </select>
           </div>
+        </div>
 
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2 pl-1">Baños</label>
-            <select formControlName="bathrooms" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 cursor-pointer outline-none shadow-sm transition-all">
+        <!-- Botón Desplegable para Filtros Avanzados (Mobile & Tablet) -->
+        <div class="flex justify-between items-center pt-1">
+          <button type="button" 
+                  (click)="toggleMoreFilters()" 
+                  class="text-xs sm:text-sm font-bold text-[#680300] hover:text-[#8a0400] flex items-center gap-1.5 py-1 px-1 rounded-lg transition-colors cursor-pointer">
+            <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': showMoreFilters}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            {{ showMoreFilters ? 'Ocultar filtros avanzados' : 'Más filtros (Dormitorios, Precios)' }}
+          </button>
+        </div>
+
+        <!-- Filtros Avanzados Expandibles -->
+        <div *ngIf="showMoreFilters" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-gray-100 animate-fadeIn">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 pl-1">Dormit.</label>
+            <select formControlName="bedrooms" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-xs sm:text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] p-2.5 sm:p-3 outline-none">
               <option value="">Indistinto</option>
-              <option value="1">1 o más</option>
-              <option value="2">2 o más</option>
-              <option value="3">3 o más</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
             </select>
           </div>
 
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2 pl-1">Precio Mín. (U$S)</label>
-            <input type="number" formControlName="minPrice" placeholder="Ej: 50000" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 outline-none shadow-sm transition-all">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 pl-1">Baños</label>
+            <select formControlName="bathrooms" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-xs sm:text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] p-2.5 sm:p-3 outline-none">
+              <option value="">Indistinto</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+            </select>
           </div>
 
-          <div class="w-full">
-            <label class="block text-sm font-semibold text-gray-800 mb-2 pl-1">Precio Máx. (U$S)</label>
-            <input type="number" formControlName="maxPrice" placeholder="Ej: 150000" class="w-full bg-white border border-gray-300 text-gray-950 text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] block p-3.5 outline-none shadow-sm transition-all">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 pl-1">Mín (U$S)</label>
+            <input type="number" formControlName="minPrice" placeholder="Ej: 50000" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-xs sm:text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] p-2.5 sm:p-3 outline-none">
           </div>
 
-          <div class="w-full sm:col-span-2 lg:col-span-1">
-            <button type="submit" class="bg-[#680300] hover:bg-[#8a0400] text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-              </svg>
-              Buscar
-            </button>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 pl-1">Máx (U$S)</label>
+            <input type="number" formControlName="maxPrice" placeholder="Ej: 150000" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-xs sm:text-sm rounded-xl focus:ring-[#680300] focus:border-[#680300] p-2.5 sm:p-3 outline-none">
           </div>
         </div>
+
+        <!-- Botón de Búsqueda -->
+        <div class="pt-2">
+          <button type="submit" class="bg-[#680300] hover:bg-[#8a0400] text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            Buscar Propiedades
+          </button>
+        </div>
+
       </form>
     </div>
   </div>
 </div>
 
-<div class="bg-white w-full pb-24 pt-16 md:pt-24">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 md:mb-10 gap-2 sm:gap-0">
-      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Propiedades Destacadas</h2>
-      <a routerLink="/venta" class="text-[#680300] font-semibold hover:underline text-sm sm:text-base">Ver todas &rarr;</a>
+<!-- Listado de Destacadas -->
+<div class="bg-white w-full pb-20 pt-12 md:pt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-end mb-6 sm:mb-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Propiedades Destacadas</h2>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">Las últimas oportunidades publicadas en Necochea y Quequén.</p>
+      </div>
+      <a routerLink="/venta" class="text-[#680300] font-bold text-sm sm:text-base hover:underline flex items-center gap-1 shrink-0">
+        Ver todas &rarr;
+      </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
       @for (prop of properties; track prop.id) {
         <app-property-card [property]="prop"></app-property-card>
       } @empty {
@@ -106,9 +162,9 @@
     </div>
 
     @if (!isLastPage && properties.length > 0) {
-      <div class="flex justify-center mt-12">
-        <button (click)="cargarMas()" [disabled]="isLoadingMore" class="bg-white border-2 border-[#680300] text-[#680300] hover:bg-[#680300] hover:text-white font-bold py-3.5 px-10 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-wait">
-          {{ isLoadingMore ? 'Cargando más propiedades...' : 'Ver más propiedades' }}
+      <div class="flex justify-center mt-10 sm:mt-12">
+        <button (click)="cargarMas()" [disabled]="isLoadingMore" class="bg-white border-2 border-[#680300] text-[#680300] hover:bg-[#680300] hover:text-white font-bold py-3 px-8 sm:px-10 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-wait text-sm sm:text-base">
+          {{ isLoadingMore ? 'Cargando...' : 'Ver más propiedades' }}
         </button>
       </div>
     }

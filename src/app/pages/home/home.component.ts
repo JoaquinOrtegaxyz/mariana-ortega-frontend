@@ -39,6 +39,18 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  showMoreFilters: boolean = false;
+
+  toggleMoreFilters() {
+    this.showMoreFilters = !this.showMoreFilters;
+    this.cdr.markForCheck();
+  }
+
+  setOperationType(op: string) {
+    this.searchForm.patchValue({ operationType: op });
+    this.cdr.markForCheck();
+  }
+
   ngOnInit(): void {
     this.loadProperties(0);
   }
