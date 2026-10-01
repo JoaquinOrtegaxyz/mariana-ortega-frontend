@@ -101,24 +101,30 @@ export class PropertyDetailComponent implements OnInit {
           }
 
           if (this.property.images && this.property.images.length > 0) {
-            const coverImg = this.property.images.find((i: any) => i.isCover) || this.property.images[0];
-            const otherImgs = this.property.images.filter((i: any) => i.id !== coverImg.id);
-            this.images = [coverImg.url, ...otherImgs.map((i: any) => i.url)]
-              .map(url => url.includes('/upload/') ? url.replace('/upload/', '/upload/f_auto,q_auto,w_1200/') : url);
+            this.processImages(this.property.images);
+            this.updateMetaTags();
+            this.isLoading = false;
+            this.cdr.markForCheck();
           } else {
-            this.images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200'];
+            // Fallback resiliente: si por caché o retardo de subida no vinieron fotos en el detalle,
+            // las consultamos al endpoint directo de imágenes de la propiedad
+            this.propertyService.getImagesByPropertyId(id)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (imgs) => {
+                  this.processImages(imgs);
+                  this.updateMetaTags();
+                  this.isLoading = false;
+                  this.cdr.markForCheck();
+                },
+                error: () => {
+                  this.processImages([]);
+                  this.updateMetaTags();
+                  this.isLoading = false;
+                  this.cdr.markForCheck();
+                }
+              });
           }
-
-          this.title.setTitle(`${this.property.title} | Mariana Ortega Inmobiliaria`);
-
-          this.meta.updateTag({ property: 'og:title', content: this.property.title });
-          this.meta.updateTag({ property: 'og:description', content: `Precio: U$S ${this.property.price}. ${this.property.characteristics?.bedrooms} Dormitorios. ¡Mirá más detalles acá!` });
-          this.meta.updateTag({ property: 'og:image', content: this.images[0] });
-          this.meta.updateTag({ property: 'og:type', content: 'website' });
-          this.meta.updateTag({ property: 'og:url', content: window.location.href });
-
-          this.isLoading = false;
-          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Error trayendo la propiedad:', err);
@@ -127,6 +133,56 @@ export class PropertyDetailComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private processImages(rawImages: any[]): void {
+    if (rawImages && rawImages.length > 0) {
+      const coverImg = rawImages.find((i: any) => i.isCover || i.cover) || rawImages[0];
+      const otherImgs = rawImages.filter((i: any) => (i.id ? i.id !== coverImg.id : i.url !== coverImg.url));
+      this.images = [coverImg.url, ...otherImgs.map((i: any) => i.url)]
+        .map(url => url.includes('/upload/') ? url.replace('/upload/', '/upload/f_auto,q_auto,w_1200/') : url);
+    } else {
+      this.images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200'];
+    }
+    this.currentImageIndex = 0;
+  }
+
+  private updateMetaTags(): void {
+    if (!this.property) return;
+    this.title.setTitle(`${this.property.title} | Mariana Ortega Inmobiliaria`);
+
+    this.meta.updateTag({ property: 'og:title', content: this.property.title });
+    this.meta.updateTag({ property: 'og:description', content: `Precio: U$S ${this.property.price}. ${this.property.characteristics?.bedrooms || 0} Dormitorios. ¡Mirá más detalles acá!` });
+    if (this.images.length > 0) {
+      this.meta.updateTag({ property: 'og:image', content: this.images[0] });
+    }
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+  }
+
+  getZoneLabel(zone: string): string {
+    const zones: Record<string, string> = {
+      'CENTRO': 'Centro',
+      'PLAYA': 'Playa',
+      'PUERTO': 'Puerto',
+      'QUEQUEN': 'Quequén',
+      'VILLA_DEL_DEPORTISTA': 'Villa del Deportista',
+      'PARQUE': 'Barrio Parque',
+      'NUEVE_DE_JULIO': '9 de Julio',
+      'INTERMEDIA': 'Intermedia',
+      'OTRO': 'Necochea'
+    };
+    return zones[zone] || zone;
+  }
+
+  getPropertyTypeLabel(type: string): string {
+    const types: Record<string, string> = {
+      'HOUSE': 'Casa',
+      'APARTMENT': 'Departamento',
+      'COMMERCIAL': 'Local Comercial',
+      'LAND': 'Terreno'
+    };
+    return types[type] || type;
   }
 
   shareProperty() {

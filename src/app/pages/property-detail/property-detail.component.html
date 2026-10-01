@@ -13,17 +13,45 @@
 
     <div *ngIf="!isLoading && !hasError && property">
 
-      <div class="mb-4 sm:mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-2">
-        <div>
-          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0f172a] tracking-tight">{{ property.title }}</h1>
-          <p class="text-gray-500 mt-1 flex items-center gap-1 font-medium text-sm sm:text-base">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#680300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            {{ property.location?.street }} {{ property.location?.streetNumber }}
+      <!-- Header de la Propiedad -->
+      <div class="mb-6 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div class="space-y-2">
+          <!-- Badges de Operación, Tipo y Zona -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wide shadow-sm"
+                  [ngClass]="property.operationType === 'SALE' ? 'bg-[#680300] text-white' : 'bg-emerald-600 text-white'">
+              {{ property.operationType === 'SALE' ? 'En Venta' : 'En Alquiler' }}
+            </span>
+            <span *ngIf="property.propertyType" class="px-3 py-1 text-xs font-bold rounded-lg uppercase tracking-wide bg-gray-100 text-gray-700">
+              {{ getPropertyTypeLabel(property.propertyType) }}
+            </span>
+            <span *ngIf="property.location?.zone" class="px-3 py-1 text-xs font-semibold rounded-lg bg-red-50 text-[#680300] border border-red-100">
+              Zona {{ getZoneLabel(property.location.zone) }}
+            </span>
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0f172a] tracking-tight leading-tight">
+            {{ property.title }}
+          </h1>
+
+          <p class="text-gray-500 flex items-center gap-1.5 font-medium text-sm sm:text-base">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#680300] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span>{{ property.location?.street }} {{ property.location?.streetNumber }}</span>
           </p>
         </div>
-        <div class="mt-1 md:mt-0">
-          <p *ngIf="property.price > 0" class="text-2xl sm:text-3xl md:text-4xl font-black text-[#8a0400]">U$S {{ property.price | number:'1.0-0' }}</p>
-          <p *ngIf="!property.price || property.price === 0" class="text-xl sm:text-2xl font-black text-[#8a0400] bg-[#8a0400]/10 px-3.5 py-1.5 rounded-xl border border-[#8a0400]/20 inline-block">Consultar valor</p>
+
+        <!-- Tarjeta de Precio Destacada -->
+        <div class="shrink-0 flex flex-col md:items-end justify-center bg-gray-50 border border-gray-200/80 rounded-2xl px-5 py-3.5 self-start md:self-auto min-w-[200px]">
+          <span class="text-[11px] font-black uppercase tracking-wider text-gray-400 mb-0.5">Precio de publicación</span>
+          <p *ngIf="property.price > 0" class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#680300] tracking-tight">
+            U$S {{ property.price | number:'1.0-0' }}
+          </p>
+          <p *ngIf="!property.price || property.price === 0" class="text-lg sm:text-xl font-bold text-[#680300] bg-[#680300]/10 px-3 py-1 rounded-xl border border-[#680300]/20 inline-block">
+            Consultar valor
+          </p>
         </div>
       </div>
 
@@ -34,12 +62,18 @@
           <div class="relative w-full h-[260px] sm:h-[380px] md:h-[480px] rounded-2xl overflow-hidden shadow-md bg-gray-200 group cursor-pointer" (click)="openLightbox(currentImageIndex)">
             <img [src]="images[currentImageIndex]" class="w-full h-full object-cover transition-all duration-500 hover:scale-105" alt="Foto propiedad">
 
-            <button (click)="$event.stopPropagation(); prevImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all text-[#680300] z-10">
+            <button *ngIf="images.length > 1" (click)="$event.stopPropagation(); prevImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all text-[#680300] z-10" title="Foto anterior">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
             </button>
-            <button (click)="$event.stopPropagation(); nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all text-[#680300] z-10">
+            <button *ngIf="images.length > 1" (click)="$event.stopPropagation(); nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all text-[#680300] z-10" title="Foto siguiente">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
             </button>
+
+            <!-- Contador de fotos -->
+            <div *ngIf="images.length > 1" class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow-md">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <span>{{ currentImageIndex + 1 }} / {{ images.length }} fotos</span>
+            </div>
 
             <div class="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-xl backdrop-blur-sm transition-all shadow-md flex items-center gap-1.5 text-xs font-semibold">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
@@ -51,14 +85,15 @@
             </div>
           </div>
 
-          <div class="flex gap-3 mt-4 overflow-x-auto pb-2">
+          <!-- Tira de miniaturas (solo si hay más de 1 imagen) -->
+          <div *ngIf="images.length > 1" class="flex gap-3 mt-4 overflow-x-auto pb-2">
             <img *ngFor="let img of images; let i = index"
                  [src]="img"
                  loading="lazy"
                  decoding="async"
                  (click)="setMainImage(i)"
-                 [ngClass]="{'border-4 border-[#680300] opacity-100': currentImageIndex === i, 'opacity-60': currentImageIndex !== i}"
-                 class="w-24 h-24 object-cover rounded-xl cursor-pointer hover:opacity-100 transition-all shadow-sm">
+                 [ngClass]="{'border-4 border-[#680300] opacity-100 scale-[1.02]': currentImageIndex === i, 'opacity-60 hover:opacity-100': currentImageIndex !== i}"
+                 class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 object-cover rounded-xl cursor-pointer transition-all shadow-sm">
           </div>
 
           <div class="mt-8 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
@@ -81,6 +116,16 @@
         <div class="space-y-6 sticky top-28 self-start w-full pb-8">
 
           <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center">
+            <div class="mb-5 pb-5 border-b border-gray-100">
+              <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Precio</span>
+              <p *ngIf="property.price > 0" class="text-3xl font-black text-[#680300]">
+                U$S {{ property.price | number:'1.0-0' }}
+              </p>
+              <p *ngIf="!property.price || property.price === 0" class="text-xl font-bold text-[#680300]">
+                Consultar valor
+              </p>
+            </div>
+
             <h3 class="text-2xl font-bold text-gray-800 mb-2">¿Querés ir a verla?</h3>
             <p class="text-gray-500 mb-6">Comunicate directo con nosotros para sacarte todas las dudas o coordinar una visita.</p>
 
