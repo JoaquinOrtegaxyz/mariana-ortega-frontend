@@ -15,31 +15,18 @@
 
       <!-- Header de la Propiedad -->
       <div class="mb-6">
-        <!-- Badges y Precio en una sola barra integrada -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2.5">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wide shadow-sm"
-                  [ngClass]="property.operationType === 'SALE' ? 'bg-[#680300] text-white' : 'bg-emerald-600 text-white'">
-              {{ property.operationType === 'SALE' ? 'En Venta' : 'En Alquiler' }}
-            </span>
-            <span *ngIf="property.propertyType" class="px-3 py-1 text-xs font-bold rounded-lg uppercase tracking-wide bg-white text-gray-700 border border-gray-200 shadow-sm">
-              {{ getPropertyTypeLabel(property.propertyType) }}
-            </span>
-            <span *ngIf="property.location?.zone" class="px-3 py-1 text-xs font-semibold rounded-lg bg-red-50 text-[#680300] border border-red-100">
-              Zona {{ getZoneLabel(property.location.zone) }}
-            </span>
-          </div>
-
-          <!-- Píldora de precio integrada en la barra de información -->
-          <div class="inline-flex items-center gap-2 bg-[#680300] text-white px-4 py-2 rounded-2xl shadow-md">
-            <span class="text-xs font-bold uppercase tracking-wider opacity-80">Valor:</span>
-            <span *ngIf="property.price > 0" class="text-xl sm:text-2xl font-black tracking-tight">
-              U$S {{ property.price | number:'1.0-0' }}
-            </span>
-            <span *ngIf="!property.price || property.price === 0" class="text-base sm:text-lg font-bold">
-              Consultar valor
-            </span>
-          </div>
+        <!-- Badges -->
+        <div class="flex items-center gap-2 flex-wrap mb-2.5">
+          <span class="px-3 py-1 text-xs font-black rounded-lg uppercase tracking-wide shadow-sm"
+                [ngClass]="property.operationType === 'SALE' ? 'bg-[#680300] text-white' : 'bg-emerald-600 text-white'">
+            {{ property.operationType === 'SALE' ? 'En Venta' : 'En Alquiler' }}
+          </span>
+          <span *ngIf="property.propertyType" class="px-3 py-1 text-xs font-bold rounded-lg uppercase tracking-wide bg-white text-gray-700 border border-gray-200 shadow-sm">
+            {{ getPropertyTypeLabel(property.propertyType) }}
+          </span>
+          <span *ngIf="property.location?.zone" class="px-3 py-1 text-xs font-semibold rounded-lg bg-red-50 text-[#680300] border border-red-100">
+            Zona {{ getZoneLabel(property.location.zone) }}
+          </span>
         </div>
 
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0f172a] tracking-tight leading-tight">
@@ -117,8 +104,7 @@
 
           <div class="bg-white p-7 rounded-3xl shadow-sm border border-gray-100">
             <!-- Bloque de Precio destacado en la tarjeta de contacto -->
-            <div class="bg-gray-50 border border-gray-200/80 rounded-2xl p-5 mb-6 text-center">
-              <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Precio de publicación</span>
+            <div class="bg-gray-50 border border-gray-200/80 rounded-2xl py-4 px-5 mb-6 text-center">
               <p *ngIf="property.price > 0" class="text-3xl sm:text-4xl font-black text-[#680300] tracking-tight">
                 U$S {{ property.price | number:'1.0-0' }}
               </p>
