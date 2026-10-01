@@ -1,23 +1,23 @@
 <nav class="bg-[#680300] text-white fixed w-full top-0 z-50 shadow-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <div class="flex justify-between items-center h-16 md:h-20">
 
       <!-- Logo -->
-      <div class="flex-shrink-0 flex items-center">
+      <div class="flex-shrink-0 flex items-center z-10">
         <a routerLink="/" (click)="closeMenu()" class="flex items-center hover:opacity-95 transition-opacity cursor-pointer">
-          <img src="assets/logo3.png" alt="Logo Inmobiliaria" class="h-10 sm:h-12 md:h-14 w-auto object-contain" onError="this.src='https://placeholder.co/150x50/white/680300?text=Logo+Inmobiliaria'">
+          <img src="assets/logo3.png" alt="Logo Inmobiliaria" class="h-11 sm:h-13 md:h-16 w-auto object-contain py-1" onError="this.src='https://placeholder.co/150x50/white/680300?text=Logo+Inmobiliaria'">
         </a>
       </div>
 
-      <!-- Links Desktop -->
-      <div class="hidden md:flex justify-center space-x-6 lg:space-x-8 font-semibold tracking-wide text-base lg:text-lg flex-1">
+      <!-- Links Desktop perfectamente centrados -->
+      <div class="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 space-x-6 lg:space-x-8 font-semibold tracking-wide text-base lg:text-lg z-10">
         <a routerLink="/venta" routerLinkActive="bg-white/15" class="px-4 py-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">Venta</a>
         <a routerLink="/alquiler" routerLinkActive="bg-white/15" class="px-4 py-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">Alquiler</a>
         <a routerLink="/contacto" routerLinkActive="bg-white/15" class="px-4 py-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">Contacto</a>
       </div>
 
       <!-- Redes y Auth Desktop -->
-      <div class="hidden md:flex items-center gap-4 lg:gap-6">
+      <div class="hidden md:flex items-center gap-4 lg:gap-6 z-10">
         <div class="flex items-center gap-3 border-r border-white/20 pr-4">
           <a href="https://www.facebook.com/Inmobiliarianecochea/" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors p-1" title="Facebook">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
