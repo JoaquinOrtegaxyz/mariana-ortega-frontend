@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, AuthResponse } from '../../models/auth.model';
 import { environment } from '../../../environments/environment';
+import { isTokenExpired } from '../utils/jwt.util';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,12 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (token && isTokenExpired(token)) {
+      localStorage.removeItem('token');
+      return null;
+    }
+    return token;
   }
 
   isLoggedIn(): boolean {
